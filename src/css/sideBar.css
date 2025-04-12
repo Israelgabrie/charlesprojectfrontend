@@ -1,0 +1,13 @@
+.sidebar-btn{
+    
+}
+
+.active-link {
+    background-color: #6366f1 !important;
+  }
+  
+
+.sidebar-btn:hover{
+    color: white;
+    background-color: #4f46e5;
+}

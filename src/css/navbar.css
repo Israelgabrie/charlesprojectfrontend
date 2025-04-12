@@ -1,0 +1,35 @@
+@font-face {
+    font-family: 'CalibreRegular';
+    src: url('../../public/fonts/otf/CalibreRegular.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'CalibreBold';
+    src: url('../../public/fonts/otf/CalibreBold.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }  
+
+.navBarContainer {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nav-link{
+    font-family: "CalibreRegular";
+    font-weight: 400;
+    font-size: 20px;
+}
+
+.navBarBtn{
+    border: 1px solid rgb(69, 67, 67);
+}
+
+.navBarBtn:hover{
+    background-color: #4f46e5;
+    color: white;
+}
+
+
+  
