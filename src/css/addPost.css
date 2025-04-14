@@ -1,0 +1,197 @@
+.addPostContainer {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .addPostHeader {
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .addPostHeader h2 {
+    font-family: "CalibreRegular";
+    font-size: 24px;
+    margin: 0;
+    color: #333;
+  }
+  
+  .postForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .userInfoSection {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .posterImage {
+    width: 50px;
+    height: 50px;
+    background-color: gray;
+    border-radius: 50%;
+  }
+  
+  .posterDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .posterName {
+    font-family: "CalibreRegular";
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .privacySelector {
+    font-family: "CalibreRegular";
+    font-size: 14px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #f5f5f5;
+    cursor: pointer;
+  }
+  
+  .postContentSection {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .postTextArea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-family: "CalibreRegular";
+    font-size: 16px;
+    resize: vertical;
+  }
+  
+  .imagePreviewContainer {
+    position: relative;
+    width: 100%;
+  }
+  
+  .imagePreview {
+    width: 100%;
+    height: 300px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  .removeImageBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  .attachmentOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+  }
+  
+  .attachmentLabel {
+    font-family: "CalibreRegular";
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .attachmentButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .attachmentButton {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .attachmentButton:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .iconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "CalibreRegular";
+    font-size: 14px;
+  }
+  
+  .formActions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+  
+  .postButton {
+    background-color: #6366f1;
+    color: white;
+    font-family: "CalibreRegular";
+    font-size: 16px;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .postButton:hover {
+    background-color: #4f46e5;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .addPostContainer {
+      padding: 15px;
+    }
+    
+    .attachmentButtons {
+      gap: 10px;
+    }
+    
+    .attachmentButton {
+      padding: 6px 10px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .attachmentButtons {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }

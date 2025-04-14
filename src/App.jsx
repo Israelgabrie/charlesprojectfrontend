@@ -5,6 +5,11 @@ import AdminSignUp from './adminComponents/adminSignUp';
 import Homepage from './components/homepage';
 import Profile from './components/profile'; // ← Example, include your real components
 import Home from './components/Home';
+import AddPost from './components/addPost';
+import Discover from './components/discover';
+import Messages from './components/messages';
+import Settings from './components/settings';
+import AdminHomePage from './adminComponents/adminHomePage';
 
 const router = createBrowserRouter([
   {
@@ -24,6 +29,10 @@ const router = createBrowserRouter([
     element: <AdminSignUp />,
   },
   {
+    path: "/admin/home",
+    element: <AdminHomePage />,
+  },
+  {
     path: "/homepage",
     element: <Homepage />,
     children: [
@@ -39,6 +48,22 @@ const router = createBrowserRouter([
         path: "profile",
         element: <Profile />, // Add your actual child routes
       },
+      {
+        path: "addPost",
+        element: <AddPost />, // Add your actual child routes
+      },
+      {
+        path: "discover",
+        element: <Discover />, // Add your actual child routes
+      },
+      {
+        path: "messages",
+        element: <Messages />, // Add your actual child routes
+      },
+      {
+        path: "settings",
+        element: <Settings />, // Add your actual child routes
+      }
     ],
   },
 ]);

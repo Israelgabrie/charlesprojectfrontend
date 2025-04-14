@@ -1,0 +1,305 @@
+.messagesContainer {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 100px);
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+  }
+  
+  /* Left Panel: Friends List */
+  .friendsListPanel {
+    width: 30%;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .searchContainer {
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .searchInput {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    font-family: "CalibreRegular";
+    font-size: 14px;
+    background-color: #f5f5f5;
+  }
+  
+  .friendsList {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .friendItem {
+    display: flex;
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .friendItem:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .friendItem.active {
+    background-color: #f0f4ff;
+    border-left: 3px solid #6366f1;
+  }
+  
+  .friendAvatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: gray;
+    margin-right: 15px;
+    flex-shrink: 0;
+  }
+  
+  .friendInfo {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .friendName {
+    font-family: "CalibreRegular";
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .lastMessage {
+    font-family: "CalibreRegular";
+    font-size: 14px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .messageTime {
+    font-family: "CalibreRegular";
+    font-size: 12px;
+    color: #999;
+    margin-left: 10px;
+    align-self: flex-start;
+    white-space: nowrap;
+  }
+  
+  /* Right Panel: Chat Box */
+  .chatPanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .chatHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+  }
+  
+  .chatHeaderLeft {
+    display: flex;
+    align-items: center;
+  }
+  
+  .onlineStatus {
+    font-family: "CalibreRegular";
+    font-size: 12px;
+    color: #4CAF50;
+  }
+  
+  .chatHeaderRight {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .headerIcon {
+    cursor: pointer;
+  }
+  
+  .messageThread {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .dateMarker {
+    text-align: center;
+    margin: 10px 0;
+    position: relative;
+  }
+  
+  .dateMarker span {
+    background-color: #f0f0f0;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-family: "CalibreRegular";
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .messageItem {
+    display: flex;
+    margin-bottom: 15px;
+    max-width: 70%;
+  }
+  
+  .messageItem.friend {
+    align-self: flex-start;
+  }
+  
+  .messageItem.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+  }
+  
+  .messageAvatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: gray;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+  
+  .messageContent {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .messageBubble {
+    padding: 10px 15px;
+    border-radius: 18px;
+    font-family: "CalibreRegular";
+    font-size: 14px;
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+  
+  .messageItem.friend .messageBubble {
+    background-color: #f0f0f0;
+    border-top-left-radius: 5px;
+  }
+  
+  .messageItem.user .messageBubble {
+    background-color: #6366f1;
+    color: white;
+    border-top-right-radius: 5px;
+  }
+  
+  .messageItem .messageTime {
+    font-size: 11px;
+    margin-top: 5px;
+    align-self: flex-end;
+  }
+  
+  .messageInputContainer {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-top: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+  }
+  
+  .attachmentIcons {
+    display: flex;
+    gap: 10px;
+    margin-right: 10px;
+  }
+  
+  .attachmentIcon {
+    cursor: pointer;
+    font-size: 18px;
+  }
+  
+  .messageInput {
+    flex: 1;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    font-family: "CalibreRegular";
+    font-size: 14px;
+  }
+  
+  .sendButton {
+    background-color: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    margin-left: 10px;
+    font-family: "CalibreRegular";
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .sendButton:hover {
+    background-color: #4f46e5;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 992px) {
+    .friendsListPanel {
+      width: 40%;
+    }
+    
+    .messageItem {
+      max-width: 85%;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .messagesContainer {
+      flex-direction: column;
+      height: calc(100vh - 80px);
+    }
+    
+    .friendsListPanel {
+      width: 100%;
+      height: 40%;
+      border-right: none;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .chatPanel {
+      height: 60%;
+    }
+    
+    .messageItem {
+      max-width: 90%;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .friendAvatar {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .messageAvatar {
+      width: 30px;
+      height: 30px;
+    }
+    
+    .attachmentIcons {
+      display: none;
+    }
+  }

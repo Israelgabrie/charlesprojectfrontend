@@ -4,19 +4,11 @@ import Navbar from './navbar';
 import SideBar from './sidebar';
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
-
 export default function Homepage() {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
+  const location = useLocation(); // <-- get the current location
 
-//   if (!loggIn) {
-//     return (
-//       <div>
-//         <ToastContainer />
-//         <LoadingScreen />
-//       </div>
-//     );
-//   }
+  const isOnlyHomePage = location.pathname === "/homePage"; // <-- check the path
 
   return (
     <div
@@ -43,9 +35,9 @@ export default function Homepage() {
         <div
           style={{
             flexGrow: 1,
-            overflowY: "hidden",
+            overflowY: isOnlyHomePage ? "hidden" : "scroll", // 👈 conditional scroll
             height: "calc(100vh - 77px)",
-            padding:"10px"
+            padding: "10px"
           }}
         >
           <Outlet />

@@ -30,7 +30,7 @@ export default function SideBar({ isOpen, isMobile }) {
 const SidebarLinks = () => (
   <>
     <NavItem to="home">Home</NavItem>
-    <NavItem to="newPost">New Post</NavItem>
+    <NavItem to="addPost">Add Post</NavItem>
     <NavItem to="profile">Profile</NavItem>
     <NavItem to="discover">Discover</NavItem>
     <NavItem to="messages">Messages</NavItem>

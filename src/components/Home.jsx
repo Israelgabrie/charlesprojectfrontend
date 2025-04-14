@@ -151,7 +151,7 @@ export default function Home() {
           <div className="postCommentHead">Comment Section</div>
           <CancelXIcon />
         </div>
-        <div className="commentsBox">
+        <div className="commentsBox" style={{height:"78%"}}>
           <div className="comment">
             <div className="commentBoxTop">
               <div className="posterImage"></div>
@@ -282,85 +282,27 @@ export default function Home() {
               
             </div>
           </div>
-          <div className="comment">
-            <div className="commentBoxTop">
-              <div className="posterImage"></div>
-              <div className="commentBoxDetails">
-                <div className="commentBoxName">Gabriel Israel</div>
-                <div className="commentBoxTme">40 Min ago</div>
-              </div>
-            </div>
-            <div className="commentText">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio
-              aut, eius ab error repudiandae minus odio voluptatum modi, rerum
-              in natus a molestiae sed consequuntur, numquam dolor culpa fugit
-              excepturi.
-            </div>
-            <div style={{marginTop:0}} className="postActionBar">
-              <div className="postActionBox">
-                <LikeIcon size={16} />
-                <div className="postActionTextDetails" style={{fontSize:14}}>18</div>
-              </div>
-              <div className="postActionBox">
-                <ShareIcon size={16}/>
-                <div className="postActionTextDetails" style={{fontSize:14}}>18</div>
-              </div>
-              
-            </div>
-          </div>
-          <div className="comment">
-            <div className="commentBoxTop">
-              <div className="posterImage"></div>
-              <div className="commentBoxDetails">
-                <div className="commentBoxName">Gabriel Israel</div>
-                <div className="commentBoxTme">40 Min ago</div>
-              </div>
-            </div>
-            <div className="commentText">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio
-              aut, eius ab error repudiandae minus odio voluptatum modi, rerum
-              in natus a molestiae sed consequuntur, numquam dolor culpa fugit
-              excepturi.
-            </div>
-            <div style={{marginTop:0}} className="postActionBar">
-              <div className="postActionBox">
-                <LikeIcon size={16} />
-                <div className="postActionTextDetails" style={{fontSize:14}}>18</div>
-              </div>
-              <div className="postActionBox">
-                <ShareIcon size={16}/>
-                <div className="postActionTextDetails" style={{fontSize:14}}>18</div>
-              </div>
-              
-            </div>
-          </div>
-          <div className="comment">
-            <div className="commentBoxTop">
-              <div className="posterImage"></div>
-              <div className="commentBoxDetails">
-                <div className="commentBoxName">Gabriel Israel</div>
-                <div className="commentBoxTme">40 Min ago</div>
-              </div>
-            </div>
-            <div className="commentText">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio
-              aut, eius ab error repudiandae minus odio voluptatum modi, rerum
-              in natus a molestiae sed consequuntur, numquam dolor culpa fugit
-              excepturi.
-            </div>
-            <div style={{marginTop:0}} className="postActionBar">
-              <div className="postActionBox">
-                <LikeIcon size={16} />
-                <div className="postActionTextDetails" style={{fontSize:14}}>18</div>
-              </div>
-              <div className="postActionBox">
-                <ShareIcon size={16}/>
-                <div className="postActionTextDetails" style={{fontSize:14}}>18</div>
-              </div>
-              
-            </div>
-          </div>
+
         </div>
+
+        <form
+            className="form-inline my-2 my-lg-0"
+            style={{
+              marginLeft: "auto",
+              marginRight: "auto",
+              display: "flex",
+              flexDirection: "row",
+              gap: 10,
+              top:10,
+              position:"relative"
+            }}
+          >
+            <input className="form-control mr-sm-2" type="search" placeholder="Add Comment" aria-label="Search" />
+            <button  className="navBarBtn btn  my-2 my-sm-0" type="submit">
+              +
+            </button>
+          </form>
+       
       </div>
     </div>
   );

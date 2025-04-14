@@ -1,0 +1,254 @@
+.settingsContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .settingsTitle {
+    font-family: "CalibreRegular";
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #333;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 15px;
+  }
+  
+  .settingsSection {
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .settingsSection:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+  
+  .sectionTitle {
+    font-family: "CalibreRegular";
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .sectionContent {
+    padding: 0 10px;
+  }
+  
+  /* Password Form Styles */
+  .passwordForm {
+    max-width: 500px;
+  }
+  
+  .formGroup {
+    margin-bottom: 20px;
+  }
+  
+  .formGroup label {
+    display: block;
+    font-family: "CalibreRegular";
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #555;
+  }
+  
+  .formInput {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: "CalibreRegular";
+    font-size: 16px;
+    transition: border-color 0.2s;
+  }
+  
+  .formInput:focus {
+    border-color: #6366f1;
+    outline: none;
+  }
+  
+  .passwordRequirements {
+    font-family: "CalibreRegular";
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+  }
+  
+  .passwordMismatch {
+    font-family: "CalibreRegular";
+    font-size: 14px;
+    color: #e53935;
+    margin-top: 8px;
+    display: none; /* Show this with JavaScript when passwords don't match */
+  }
+  
+  .saveButton {
+    background-color: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 24px;
+    font-family: "CalibreRegular";
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .saveButton:hover {
+    background-color: #4f46e5;
+  }
+  
+  /* Notification Preferences Styles */
+  .notificationOption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .notificationOption:last-child {
+    border-bottom: none;
+  }
+  
+  .optionInfo {
+    flex: 1;
+  }
+  
+  .optionTitle {
+    font-family: "CalibreRegular";
+    font-size: 18px;
+    margin: 0 0 5px 0;
+    color: #333;
+  }
+  
+  .optionDescription {
+    font-family: "CalibreRegular";
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+  }
+  
+  /* Toggle Switch Styles */
+  .toggleSwitch {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    margin-left: 20px;
+  }
+  
+  .toggleInput {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .toggleLabel {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+  }
+  
+  .toggleLabel:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+  
+  .toggleInput:checked + .toggleLabel {
+    background-color: #6366f1;
+  }
+  
+  .toggleInput:checked + .toggleLabel:before {
+    transform: translateX(30px);
+  }
+  
+  /* Danger Zone Styles */
+  .dangerZone {
+    background-color: #fff8f8;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #ffcdd2;
+  }
+  
+  .dangerZone .sectionTitle {
+    color: #d32f2f;
+  }
+  
+  .warningText {
+    font-family: "CalibreRegular";
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #ffebee;
+    border-radius: 6px;
+  }
+  
+  .deactivateButton {
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 24px;
+    font-family: "CalibreRegular";
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .deactivateButton:hover {
+    background-color: #b71c1c;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .settingsContainer {
+      padding: 15px;
+    }
+    
+    .notificationOption {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .toggleSwitch {
+      margin-left: 0;
+      margin-top: 10px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .settingsTitle {
+      font-size: 24px;
+    }
+    
+    .sectionTitle {
+      font-size: 20px;
+    }
+    
+    .formInput {
+      padding: 10px;
+    }
+    
+    .saveButton, .deactivateButton {
+      width: 100%;
+    }
+  }
