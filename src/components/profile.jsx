@@ -1,7 +1,28 @@
-import React from 'react';
+import React , {useState,useEffect} from 'react';
 import "../css/profile.css";
+import { useUser } from '../userContext';
+import { formatDate } from '../helperFuntions';
+import { getUserStats } from '../backendOperation';
 
 export default function Profile() {
+  const {user,setUser} = useUser();
+  const [userStats,setUserStats] = useState({followerCount:"NaN",followingCount:"NaN",postCount:"NaN"})
+  console.log(user)
+  
+
+  useEffect(()=>{
+    const fetchUser = async () => {
+      const response = await getUserStats({ userId: user.id });
+      if (response.success) {
+       setUserStats(response.stats)
+      } else {
+        console.error("Failed to fetch user data:", response.error);
+      }
+    };
+    fetchUser();
+  },[])
+  
+
   return (
     <div className="profileContainer">
       <div className="profileHeader">
@@ -13,19 +34,19 @@ export default function Profile() {
       
       <div className="profileContent">
         <div className="profileInfo">
-          <h1 className="fullName">John Doe</h1>
+          <h1 className="fullName">{user?.fullName}</h1>
           <div className="userDetails">
             <div className="detailItem">
               <span className="detailLabel">Matric Number:</span>
-              <span className="detailValue">MT12345678</span>
+              <span className="detailValue">{user?.idNumber}</span>
             </div>
             <div className="detailItem">
               <span className="detailLabel">Email:</span>
-              <span className="detailValue">johndoe@example.com</span>
+              <span className="detailValue">{user?.email}</span>
             </div>
             <div className="detailItem">
               <span className="detailLabel">Date Joined:</span>
-              <span className="detailValue">January 15, 2023</span>
+              <span className="detailValue">{formatDate(user?.createdAt)}</span>
             </div>
           </div>
           
@@ -41,15 +62,15 @@ export default function Profile() {
         
         <div className="statsContainer">
           <div className="statBox">
-            <span className="statNumber">256</span>
+            <span className="statNumber">{userStats.postCount}</span>
             <span className="statLabel">Posts</span>
           </div>
           <div className="statBox">
-            <span className="statNumber">1,024</span>
+            <span className="statNumber">{userStats.followerCount}</span>
             <span className="statLabel">Followers</span>
           </div>
           <div className="statBox">
-            <span className="statNumber">512</span>
+            <span className="statNumber">{userStats.followingCount}</span>
             <span className="statLabel">Following</span>
           </div>
         </div>

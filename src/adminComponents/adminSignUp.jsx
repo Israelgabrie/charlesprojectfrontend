@@ -9,6 +9,8 @@ import ClipLoader from "react-spinners/ClipLoader";
 const AdminSignUp = () => {
   const navigate = useNavigate();
 
+  // ✅ Added fullName state
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -24,6 +26,7 @@ const AdminSignUp = () => {
     }
 
     const userObject = {
+      fullName, // ✅ included full name
       email,
       password,
       adminPassCode,
@@ -48,6 +51,19 @@ const AdminSignUp = () => {
         <p className="subtitle">Create an administrator account</p>
 
         <form className="admin-signup-form" onSubmit={handleSubmit}>
+          {/* ✅ Full Name */}
+          <div className="form-group">
+            <label htmlFor="fullName">Full Name</label>
+            <input
+              onChange={(e) => setFullName(e.target.value)}
+              value={fullName}
+              type="text"
+              id="fullName"
+              placeholder="Enter your full name"
+              required
+            />
+          </div>
+
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input

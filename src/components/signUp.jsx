@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import "../css/signUp.css";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // ✅ Import the CSS for toast styling
+import "react-toastify/dist/ReactToastify.css";
 import { addUser } from "../backendOperation";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const SignUp = () => {
   const navigate = useNavigate();
+
+  // ✅ Added fullName state
+  const [fullName, setFullName] = useState("");
   const [matricNumber, setMatricNumber] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,13 +20,14 @@ const SignUp = () => {
 
   useEffect(() => {
     console.log({
+      fullName,
       matricNumber,
       email,
       password,
       confirmPassword,
       adminCode,
     });
-  }, [matricNumber, email, password, confirmPassword, adminCode]);
+  }, [fullName, matricNumber, email, password, confirmPassword, adminCode]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +37,9 @@ const SignUp = () => {
       return;
     }
 
+    // ✅ Include fullName in the user object sent to the backend
     const userObject = {
+      fullName,
       idNumber: matricNumber,
       email,
       password,
@@ -42,14 +48,14 @@ const SignUp = () => {
 
     setLoading(true);
     const response = await addUser(userObject);
-    console.log(response)
+    console.log(response);
     setLoading(false);
 
     if (response && !response.error) {
       toast.success("Account created successfully");
-      setTimeout(()=>{
+      setTimeout(() => {
         navigate("/login");
-      },3000)
+      }, 3000);
     } else {
       toast.error(response?.error?.message || "Failed to create account");
     }
@@ -62,6 +68,20 @@ const SignUp = () => {
         <p className="subtitle">Please fill in the details to sign up</p>
 
         <form className="signup-form" onSubmit={handleSubmit}>
+          {/* ✅ Full Name */}
+          <div className="form-group">
+            <label htmlFor="fullName">Full Name</label>
+            <input
+              onChange={(e) => setFullName(e.target.value)}
+              value={fullName}
+              type="text"
+              id="fullName"
+              placeholder="Enter your full name"
+              required
+            />
+          </div>
+
+          {/* Matric Number */}
           <div className="form-group">
             <label htmlFor="matric">Matric Number</label>
             <input
@@ -74,6 +94,7 @@ const SignUp = () => {
             />
           </div>
 
+          {/* Email */}
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -86,6 +107,7 @@ const SignUp = () => {
             />
           </div>
 
+          {/* Password */}
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
@@ -98,6 +120,7 @@ const SignUp = () => {
             />
           </div>
 
+          {/* Confirm Password */}
           <div className="form-group">
             <label htmlFor="confirm-password">Confirm Password</label>
             <input
@@ -110,6 +133,7 @@ const SignUp = () => {
             />
           </div>
 
+          {/* Admin Passcode */}
           <div className="form-group">
             <label htmlFor="admin-code">Admin Passcode</label>
             <input
@@ -135,7 +159,6 @@ const SignUp = () => {
         </form>
       </div>
 
-      {/* ✅ ToastContainer should be rendered */}
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );

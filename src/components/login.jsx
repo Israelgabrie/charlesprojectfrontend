@@ -3,8 +3,10 @@ import "../css/login.css";
 import { useNavigate } from "react-router-dom";
 import { checkUser } from "../backendOperation";
 import { ToastContainer,toast } from "react-toastify";
+import { useUser } from "../userContext";
 
 const Login = () => {
+  const {user,setUser} = useUser();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -34,8 +36,9 @@ const Login = () => {
       toast.error(response.error.message || "Login failed");
     } else if (response.user) {
       toast.success("Login successful");
+      setUser(response.user)
       if (response.user.role === "admin") {
-        navigate("/admin/home");
+        navigate("/admin");
       } else {
         navigate("/homepage/home");
       }
