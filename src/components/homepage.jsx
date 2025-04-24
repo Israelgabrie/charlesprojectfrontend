@@ -6,6 +6,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../userContext";
 import { getLoggedInUser } from "../backendOperation";
 import { toast, ToastContainer } from "react-toastify";
+import LoadingPage from "./loadingComponent";
 
 export default function Homepage() {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,9 +52,7 @@ export default function Homepage() {
     return (
       <div>
         <ToastContainer />
-        <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
-          <p>Loading...</p>
-        </div>
+        <LoadingPage/>
       </div>
     );
   }

@@ -1,149 +1,298 @@
-import React from 'react';
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import "../css/messages.css";
 import { CancelXIcon } from "../SvgComponents";
+import { toast } from "react-toastify";
+import {
+  backendLocation,
+  getChats,
+  getMessages,
+  socket,
+} from "../backendOperation";
+import { useUser } from "../userContext";
+import { formatTimeFromISO, getRelativeTime } from "../helperFuntions";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function Messages() {
+  const { user } = useUser();
+  const [chats, setChats] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+  const { chatId } = useParams();
+  const [currentChat, setCurrentChat] = useState({});
+  const [messages, setMessages] = useState([]);
+  const [messageText, setMessageText] = useState("");
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    const handleNewMessage = (data) => {
+      console.log("📨 New message received:", data);
+
+      toast.info("📨 New message received:");
+      if (data.chatId === chatId) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            ...data.messageData,
+            sender: {
+              _id: data.senderId,
+              fullName: data?.messageData?.sender?.fullName || "NaN",
+            },
+          },
+        ]);
+      }
+
+      // Always update chat preview + sort later via useMemo
+      setChats((prev) => {
+        const updated = prev.map((chat) =>
+          chat.chatId === data.chatId
+            ? {
+                ...chat,
+                lastMessage: data.messageData.content,
+                time: new Date().toISOString(),
+              }
+            : chat
+        );
+
+        const exists = updated.some((c) => c.chatId === data.chatId);
+        if (!exists) {
+          updated.push({
+            chatId: data.chatId,
+            fullName: "Unknown", // fallback if new
+            lastMessage: data.messageData.content,
+            time: new Date().toISOString(),
+          });
+        }
+
+        return [...updated];
+      });
+    };
+
+    socket.on("newMessage", handleNewMessage);
+    return () => socket.off("newMessage", handleNewMessage);
+  }, [chatId]);
+
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    const getAllChats = async () => {
+      const toastId = toast.loading("Loading Chats...");
+      try {
+        const response = await getChats({ userId: user.id });
+        console.log(response);
+        toast.update(toastId, {
+          render: response.message || "Something went wrong",
+          autoClose: 2000,
+          isLoading: false,
+          type: response.success ? "success" : "error",
+        });
+
+        if (response.success) {
+          setChats(response.chats);
+        }
+      } catch (error) {
+        toast.update(toastId, {
+          render: error.message || "Error fetching chats",
+          autoClose: 2000,
+          isLoading: false,
+          type: "error",
+        });
+      }
+    };
+
+    getAllChats();
+  }, [user.id]);
+
+  useEffect(() => {
+    async function getCurrentChatMessages() {
+      if (chatId) {
+        const response = await getMessages({ chatId });
+        if (response.success) {
+          setMessages(response.messages);
+          const chatInfo = chats.find((c) => c.chatId === chatId);
+          if (chatInfo) {
+            setCurrentChat(chatInfo);
+          }
+        } else {
+          navigate("/homepage/messages");
+        }
+      }
+    }
+
+    getCurrentChatMessages();
+  }, [chatId, chats]);
+
+  async function sendMessage() {
+    if (!messageText.trim()) return;
+
+    socket.emit(
+      "addMessage",
+      { type: "text", value: messageText, userId: user.id, chatId },
+      (data) => {
+        if (data.success) {
+          setMessageText("");
+        }
+      }
+    );
+  }
+
+  const sortedAndFilteredChats = useMemo(() => {
+    return [...chats]
+      .filter((chat) =>
+        chat.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .sort((a, b) => new Date(b.time) - new Date(a.time)); // newest at top
+  }, [chats, searchTerm]);
+
+  useEffect(() => {
+    const joinAllChatRooms = () => {
+      chats.forEach((chat) => {
+        socket.emit("joinRoom", user.id, chat.chatId);
+      });
+    };
+
+    if (chats.length) {
+      joinAllChatRooms();
+    }
+  }, [chats]);
+
   return (
     <div className="messagesContainer">
-      {/* Left Panel: Friends List */}
+      {/* Left Panel */}
       <div className="friendsListPanel">
         <div className="searchContainer">
-          <input type="text" className="searchInput" placeholder="Search friends..." />
+          <input
+            type="text"
+            className="searchInput"
+            placeholder="Search friends..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-        
+
         <div className="friendsList">
-          <div className="friendItem active">
-            <div className="friendAvatar"></div>
-            <div className="friendInfo">
-              <div className="friendName">Sarah Johnson</div>
-              <div className="lastMessage">Hey, are you coming to the lecture today?</div>
+          {sortedAndFilteredChats.map((chat) => (
+            <div
+              key={chat.chatId}
+              className={`friendItem ${chatId === chat.chatId ? "active" : ""}`}
+              onClick={() => {
+                navigate(`/homepage/messages/${chat.chatId}`);
+                setCurrentChat(chat);
+              }}
+            >
+              <div
+                className="friendAvatar"
+                style={{
+                  backgroundImage: `url(${backendLocation}${chat.profileImage})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              ></div>
+              <div className="friendInfo">
+                <div className="friendName">{chat.fullName}</div>
+                <div className="lastMessage">{chat.lastMessage}</div>
+              </div>
+              <div className="messageTime">{getRelativeTime(chat.time)}</div>
             </div>
-            <div className="messageTime">5 mins</div>
-          </div>
-          
-          <div className="friendItem">
-            <div className="friendAvatar"></div>
-            <div className="friendInfo">
-              <div className="friendName">Michael Chen</div>
-              <div className="lastMessage">Thanks for the notes!</div>
-            </div>
-            <div className="messageTime">Yesterday</div>
-          </div>
-          
-          <div className="friendItem">
-            <div className="friendAvatar"></div>
-            <div className="friendInfo">
-              <div className="friendName">Jessica Williams</div>
-              <div className="lastMessage">Did you finish the assignment?</div>
-            </div>
-            <div className="messageTime">2 days</div>
-          </div>
-          
-          <div className="friendItem">
-            <div className="friendAvatar"></div>
-            <div className="friendInfo">
-              <div className="friendName">David Kim</div>
-              <div className="lastMessage">Let's meet at the library at 3pm</div>
-            </div>
-            <div className="messageTime">1 week</div>
-          </div>
-          
-          <div className="friendItem">
-            <div className="friendAvatar"></div>
-            <div className="friendInfo">
-              <div className="friendName">Emma Thompson</div>
-              <div className="lastMessage">Have you started studying for the exam?</div>
-            </div>
-            <div className="messageTime">2 weeks</div>
-          </div>
-          
-          <div className="friendItem">
-            <div className="friendAvatar"></div>
-            <div className="friendInfo">
-              <div className="friendName">James Wilson</div>
-              <div className="lastMessage">Can you share the presentation slides?</div>
-            </div>
-            <div className="messageTime">3 weeks</div>
-          </div>
+          ))}
         </div>
       </div>
-      
-      {/* Right Panel: Chat Box */}
-      <div className="chatPanel">
+
+      {/* Right Panel */}
+      <div className="chatPanel" style={{ display: chatId ? "flex" : "none" }}>
         <div className="chatHeader">
           <div className="chatHeaderLeft">
-            <div className="friendAvatar"></div>
+            <div
+              className="friendAvatar"
+              style={{
+                backgroundImage: `url(${backendLocation}${currentChat?.profileImage})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            ></div>
             <div className="friendInfo">
-              <div className="friendName">Sarah Johnson</div>
+              <div className="friendName">{currentChat.fullName}</div>
               <div className="onlineStatus">Online</div>
             </div>
           </div>
           <div className="chatHeaderRight">
-            <div className="headerIcon">
+            <div
+              className="headerIcon"
+              onClick={() => navigate("/homepage/messages")}
+            >
               <CancelXIcon />
             </div>
           </div>
         </div>
-        
+
         <div className="messageThread">
           <div className="dateMarker">
             <span>Today</span>
           </div>
-          
-          <div className="messageItem friend">
-            <div className="messageAvatar"></div>
-            <div className="messageContent">
-              <div className="messageBubble">Hey, are you coming to the lecture today?</div>
-              <div className="messageTime">10:15 AM</div>
+
+          {messages.map((message) => (
+            <div
+              key={message._id}
+              className={`messageItem ${
+                message.sender._id?.toString() === user.id?.toString()
+                  ? "user"
+                  : "friend"
+              }`}
+            >
+              {message.sender._id?.toString() === user.id?.toString() ? null : (
+                <div
+                  className="messageAvatar"
+                  style={{
+                    backgroundImage: `url(${backendLocation}${currentChat?.profileImage})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                ></div>
+              )}
+              <div className="messageContent">
+                <div className="messageBubble">{message.content}</div>
+                <div
+                  className="messageTime"
+                  style={{
+                    marginRight:
+                      message.sender._id?.toString() === user.id?.toString()
+                        ? ""
+                        : "auto",
+                  }}
+                >
+                  {formatTimeFromISO(message.createdAt)}
+                </div>
+              </div>
             </div>
-          </div>
-          
-          <div className="messageItem user">
-            <div className="messageContent">
-              <div className="messageBubble">Yes, I'll be there. Do you want to meet before class?</div>
-              <div className="messageTime">10:17 AM</div>
-            </div>
-          </div>
-          
-          <div className="messageItem friend">
-            <div className="messageAvatar"></div>
-            <div className="messageContent">
-              <div className="messageBubble">Let's meet at the cafeteria around 11:30.</div>
-              <div className="messageTime">10:20 AM</div>
-            </div>
-          </div>
-          
-          <div className="messageItem user">
-            <div className="messageContent">
-              <div className="messageBubble">Perfect. I'll see you there!</div>
-              <div className="messageTime">10:21 AM</div>
-            </div>
-          </div>
-          
-          <div className="messageItem friend">
-            <div className="messageAvatar"></div>
-            <div className="messageContent">
-              <div className="messageBubble">Don't forget to bring your notes from last week.</div>
-              <div className="messageTime">10:25 AM</div>
-            </div>
-          </div>
-          
-          <div className="messageItem user">
-            <div className="messageContent">
-              <div className="messageBubble">Got it. I'll bring them.</div>
-              <div className="messageTime">10:26 AM</div>
-            </div>
-          </div>
+          ))}
+          <div ref={bottomRef}></div>
         </div>
-        
-        <div className="messageInputContainer">
+
+        <form
+          className="messageInputContainer"
+          onSubmit={(e) => {
+            e.preventDefault();
+            sendMessage();
+          }}
+        >
           <div className="attachmentIcons">
             <div className="attachmentIcon">📎</div>
             <div className="attachmentIcon">😊</div>
           </div>
-          <input type="text" className="messageInput" placeholder="Type a message..." />
-          <button className="sendButton">Send</button>
-        </div>
+          <input
+            type="text"
+            className="messageInput"
+            placeholder="Type a message..."
+            value={messageText}
+            onChange={(e) => setMessageText(e.target.value)}
+          />
+          <button className="sendButton" type="submit">
+            Send
+          </button>
+        </form>
       </div>
     </div>
   );

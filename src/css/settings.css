@@ -217,6 +217,344 @@
   .deactivateButton:hover {
     background-color: #b71c1c;
   }
+
+
+  /* Profile Image Change Styles - Improved Version */
+.imageSection {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 5px 0;
+}
+
+.currentImageContainer {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  padding: 20px;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.currentImageContainer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.profileImagePreview {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.profileImage {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  border: 4px solid white;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.profileImage::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+.profileImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageInfo {
+  flex: 1;
+}
+
+.imageTitle {
+  font-family: "CalibreBold", sans-serif;
+  font-size: 20px;
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.imageDescription {
+  font-family: "CalibreRegular", sans-serif;
+  font-size: 15px;
+  color: #666;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.imageUploadControls {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding: 25px;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.uploadButtonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.uploadButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  color: #6366f1;
+  border: 2px solid #6366f1;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-family: "CalibreRegular", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  max-width: 220px;
+  position: relative;
+  overflow: hidden;
+}
+
+.uploadButton:hover {
+  background-color: #f5f7ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.uploadButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.1);
+}
+
+.uploadButton::before {
+  content: '📷';
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.fileRequirements {
+  font-family: "CalibreRegular", sans-serif;
+  font-size: 13px;
+  color: #666;
+  background-color: #f0f4f8;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: inline-block;
+  max-width: 300px;
+}
+
+.imageActionButtons {
+  display: flex;
+  gap: 15px;
+  margin-top: 5px;
+}
+
+.saveImageButton {
+  background-color: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-family: "CalibreRegular", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.saveImageButton:hover {
+  background-color: #4f46e5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.saveImageButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.2);
+}
+
+.saveImageButton::before {
+  content: '✓';
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.cancelButton {
+  background-color: white;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-family: "CalibreRegular", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cancelButton:hover {
+  background-color: #f5f5f5;
+  color: #333;
+  border-color: #ccc;
+}
+
+.cancelButton:active {
+  background-color: #eee;
+}
+
+/* Image preview when a new image is selected */
+.newImagePreview {
+  margin-top: 20px;
+  border: 2px dashed #d1d5db;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #f9fafb;
+  transition: all 0.2s ease;
+  display: none; /* Show this when an image is selected */
+}
+
+.newImagePreview.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.previewTitle {
+  font-family: "CalibreBold", sans-serif;
+  font-size: 18px;
+  margin: 0 0 15px 0;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+.previewTitle::before {
+  content: '👁️';
+  margin-right: 8px;
+}
+
+.previewImage {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Image upload progress */
+.uploadProgress {
+  margin-top: 15px;
+  display: none; /* Show when uploading */
+}
+
+.progressBar {
+  height: 6px;
+  background-color: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: #6366f1;
+  width: 0%; /* Update with JS */
+  transition: width 0.3s ease;
+}
+
+.progressText {
+  font-family: "CalibreRegular", sans-serif;
+  font-size: 13px;
+  color: #666;
+  text-align: right;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .currentImageContainer {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 15px;
+  }
+  
+  .profileImagePreview {
+    margin-bottom: 15px;
+  }
+  
+  .imageUploadControls {
+    padding: 20px;
+  }
+  
+  .uploadButton {
+    max-width: 100%;
+  }
+  
+  .imageActionButtons {
+    flex-direction: column;
+  }
+  
+  .saveImageButton, .cancelButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileImage {
+    width: 110px;
+    height: 110px;
+  }
+  
+  .imageTitle {
+    font-size: 18px;
+  }
+  
+  .imageDescription {
+    font-size: 14px;
+  }
+}
+
+
+
+
+
+
+
+  
   
   /* Responsive adjustments */
   @media (max-width: 768px) {
@@ -234,6 +572,9 @@
       margin-top: 10px;
     }
   }
+
+
+  
   
   @media (max-width: 576px) {
     .settingsTitle {

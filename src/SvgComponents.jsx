@@ -1,13 +1,13 @@
 import React from "react";
 
-export function LikeIcon({ size = 24, color = "currentColor" }) {
+export function LikeIcon({ size = 24, color }) {
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
+      fill={color}
+      stroke={"black"}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -51,14 +51,14 @@ export function ShareIcon({ size = 24, color = "currentColor" }) {
   );
 }
 
-export function SaveIcon({ size = 24, color = "currentColor" }) {
+export function SaveIcon({ size = 24, color  }) {
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
+      fill={color}
+      stroke={"black"}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"

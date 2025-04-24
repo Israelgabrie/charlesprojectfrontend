@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import {
   getUserFeed,
   addComment,
   getComments,
   followUser,
   unFollowUser,
+  addLike,
+  backendLocation,
+  savePost,
+  socket,
 } from "../backendOperation";
 import { useUser } from "../userContext";
 import { toast } from "react-toastify";
@@ -19,8 +24,8 @@ import {
   ShareIcon,
 } from "../SvgComponents";
 
-export default function Home() {
-  const { user, setUser } = useUser();
+export default function Home({}) {
+  const { user } = useUser();
   const [feed, setFeed] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPost, setCurrentPost] = useState(null);
@@ -29,6 +34,15 @@ export default function Home() {
   const [commentLoading, setCommentLoading] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [followedUsers, setFollowedUsers] = useState({});
+  const [savedPosts, setSavedPosts] = useState([]);
+  const [filteredFeed, setFilteredFeed] = useState([]);
+
+
+  const location = useLocation();
+
+  // Use URLSearchParams to get query params
+  const queryParams = new URLSearchParams(location.search);
+  const searchValue = queryParams.get("search"); // "izzy"
 
   useEffect(() => {
     if (user?.following?.length) {
@@ -46,13 +60,17 @@ export default function Home() {
       if (!user?.id) return;
       setLoading(true);
       const data = await getUserFeed({ id: user.id });
+
       if (data.success) {
         setFeed(data.feed || []);
+        setSavedPosts(data.savedPosts || []);
       } else {
         toast.error(data.message || "Failed to load feed");
       }
+
       setLoading(false);
     };
+
     fetchFeed();
   }, [user?.id]);
 
@@ -100,7 +118,9 @@ export default function Home() {
 
   const handleFollow = async (targetUserId) => {
     const isFollowing = followedUsers[targetUserId];
-    const toastId = toast.loading(isFollowing ? "Unfollowing user..." : "Following user...");
+    const toastId = toast.loading(
+      isFollowing ? "Unfollowing user..." : "Following user..."
+    );
 
     const response = isFollowing
       ? await unFollowUser({ followerId: user.id, targetId: targetUserId })
@@ -128,101 +148,150 @@ export default function Home() {
     }
   };
 
+  const handleLike = async (postId) => {
+    const result = await addLike({ postId, userId: user.id });
+    if (result.success) {
+      setFeed((prevFeed) =>
+        prevFeed.map((post) =>
+          post._id === postId
+            ? {
+                ...post,
+                likes: post.likes.includes(user.id)
+                  ? post.likes.filter((id) => id !== user.id)
+                  : [...post.likes, user.id],
+              }
+            : post
+        )
+      );
+    } else {
+      toast.error(result.message || "Failed to like post");
+    }
+  };
+
+  const handleSave = async (postId) => {
+    const toastId = toast.loading("Saving post...");
+    const result = await savePost({ postId, userId: user.id });
+    if (result.success) {
+      toast.update(toastId, {
+        render: savedPosts.includes(postId) ? "Post unsaved!" : "Post saved!",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
+
+      setSavedPosts(result.savedPosts || []);
+    } else {
+      toast.update(toastId, {
+        render: result.message || "Failed to save post",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (searchValue) {
+      const filtered = feed.filter((post) => {
+        const name = post.author?.fullName || "";
+        return name.toLowerCase().includes(searchValue.toLowerCase());
+      });
+      setFilteredFeed(filtered);
+    } else {
+      setFilteredFeed(feed);
+    }
+  }, [feed, searchValue]);
+  
+
+
+
   return (
     <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", overflow: "hidden" }}>
       <div className="postsContainer" style={{ overflowY: "scroll", height: "500px", width: "55%" }}>
         {loading ? (
           <div>Loading posts...</div>
-        ) : feed.length === 0 ? (
-          <div>No posts yet.</div>
+        ) : filteredFeed.length === 0 ? (
+          <div>No posts found.</div>
         ) : (
-          feed.map((post) => (
-            <div key={post._id} className="post" style={{ backgroundColor: "white" }}>
-              {/* Post Header */}
-              <div className="postTopBar">
-                <div className="postTopBarRightSide">
-                  <div className="posterImage">
-                    {post.author?.profilePic && (
-                      <img
-                        src={post.author.profilePic}
-                        alt="profile"
-                        style={{ borderRadius: "50%", width: 40, height: 40 }}
-                      />
-                    )}
+          filteredFeed.map((post) => {
+            const isLiked = post.likes?.includes(user.id);
+            const isSaved = savedPosts.includes(post._id);
+            return (
+              <div key={post._id} className="post" style={{ backgroundColor: "white" }}>
+                {/* Post Header */}
+                <div className="postTopBar">
+                  <div className="postTopBarRightSide">
+                    <div className="posterImage" >
+                      {post.author?.profileImage && (                
+                        <div style={{backgroundImage:`url(${backendLocation}${post.author?.profileImage})`, backgroundSize:"cover",width: 40, height: 40,borderRadius:0}} alt="profile" ></div>
+                      )}
+                    </div>
+                    <div className="posterDetails">
+                      <div className="posterName">{post.author?.fullName || "Unknown"}</div>
+                      {post.author?._id !== user.id && (
+                        <div className="followBtn" onClick={() => handleFollow(post.author._id)} style={{ cursor: "pointer", color: followedUsers[post.author._id] ? "black" : "white" }}>
+                          {followedUsers[post.author._id] ? "Unfollow" : "Follow"}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="posterDetails">
-                    <div className="posterName">{post.author?.fullName || "Unknown"}</div>
-                    {post.author?._id !== user.id && (
-                      <div
-                        className="followBtn"
-                        onClick={() => handleFollow(post.author._id)}
-                        style={{
-                          cursor: "pointer",
-                          color: followedUsers[post.author._id] ? "black" : "white",
-                        }}
-                      >
-                        {followedUsers[post.author._id] ? "Unfollow" : "Follow"}
-                      </div>
-                    )}
+                  <div className="postTopSideLeftSide">
+                    <div className="postTopSideTime">{getTimeAgo(post.createdAt)}</div>
+                    
                   </div>
                 </div>
-                <div className="postTopSideLeftSide">
-                  <div className="postTopSideTime">{getTimeAgo(post.createdAt)}</div>
-                  <div className="postOption">...</div>
+
+                <div className="postText">{post.content}</div>
+
+                {post.image && (
+                  <div
+                    className="postImage"
+                    style={{
+                      backgroundImage: `url("${backendLocation}${post.image}")`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      height: "400px",
+                      width: "100%",
+                    }}
+                  />
+                )}
+
+                {post.video && typeof post.video === "string" && post.video.trim() !== "" && (
+                  <div className="postVideo">
+                    <video controls width="100%">
+                      <source src={`${backendLocation}${post.video}`} type="video/mp4" />
+                    </video>
+                  </div>
+                )}
+
+                <div className="postActionBar" style={{ gap: 10 }}>
+                  <div className="postActionBox" onClick={() => handleLike(post._id)} style={{ cursor: "pointer" }}>
+                    <LikeIcon color={isLiked ? "black" : "white"} />
+                    <div className="postActionTextDetails">{post.likes?.length || 0}</div>
+                  </div>
+                  <div className="postActionBox" onClick={() => handleCommentIconClick(post._id)}>
+                    <CommentIcon />
+                    <div className="postActionTextDetails">{post.comments?.length || 0}</div>
+                  </div>
+                  <div className="postActionBox" onClick={() => handleSave(post._id)} style={{ cursor: "pointer" }}>
+                    <SaveIcon color={isSaved ? "black" : "white"} />
+                  </div>
                 </div>
               </div>
-
-              {/* Post Content */}
-              <div className="postText">{post.content}</div>
-
-              {post.image && (
-                <div
-                  className="postImage"
-                  style={{
-                    backgroundImage: `url("http://localhost:4200${post.image}")`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    height: "400px",
-                    width: "100%",
-                  }}
-                />
-              )}
-
-              {post.video && typeof post.video === "string" && post.video.trim() !== "" && (
-                <div className="postVideo">
-                  <video controls width="100%">
-                    <source src={`http://localhost:4200${post.video}`} type="video/mp4" />
-                  </video>
-                </div>
-              )}
-
-              {/* Action Bar */}
-              <div className="postActionBar" style={{ gap: 10 }}>
-                <div className="postActionBox">
-                  <LikeIcon />
-                  <div className="postActionTextDetails">18</div>
-                </div>
-                <div className="postActionBox" onClick={() => handleCommentIconClick(post._id)}>
-                  <CommentIcon />
-                  <div className="postActionTextDetails">18</div>
-                </div>
-                <div className="postActionBox">
-                  <SaveIcon />
-                </div>
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
-      {/* Comment Section */}
+      {/* Comments Section */}
       {showComments && (
         <div className="commentsContainer" style={{ width: "45%", height: "500px" }}>
           <div className="commentSectionTop">
             <div className="postCommentHead">Comment Section</div>
-            <CancelXIcon onClick={() => setShowComments(false)} style={{ cursor: "pointer" }} />
+            <span onClick={() => setShowComments(false)} style={{ cursor: "pointer" }}>
+              <CancelXIcon />
+            </span>
           </div>
-
           <div className="commentsBox" style={{ height: "78%", overflowY: "scroll", padding: "10px" }}>
             {commentLoading ? (
               <div style={{ display: "flex", justifyContent: "center", paddingTop: "20px" }}>
@@ -254,9 +323,7 @@ export default function Home() {
               onChange={(e) => setCommentText(e.target.value)}
               placeholder="Add a comment"
             />
-            <button className="navBarBtn btn" type="submit">
-              +
-            </button>
+            <button className="navBarBtn btn" type="submit">+</button>
           </form>
         </div>
       )}

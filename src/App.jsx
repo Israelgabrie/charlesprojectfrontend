@@ -12,11 +12,14 @@ import Settings from './components/settings';
 import AdminHomePage from './adminComponents/adminHomePage';
 import ManageRequests from './adminComponents/manageRequests';
 import { UserProvider } from './userContext';
+import NotFoundPage from './components/errorPage';
+import AdminDashboard from './adminComponents/dashboard';
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Login />,
+    errorElement:<NotFoundPage/>
   },
   {
     path: "/login",
@@ -56,7 +59,7 @@ const router = createBrowserRouter([
       },
       {
         path: "dashboard",
-        element: <div>Admin dashboard Coming Soon</div>,
+        element: <AdminDashboard/>,
       }
     ],
   },
@@ -86,6 +89,10 @@ const router = createBrowserRouter([
       },
       {
         path: "messages",
+        element: <Messages />,
+      },
+      {
+        path: "messages/:chatId",
         element: <Messages />,
       },
       {

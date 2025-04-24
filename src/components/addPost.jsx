@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import "../css/addPost.css";
 import { CancelXIcon } from "../SvgComponents";
-import { useUser } from '../userContext';
-import { requestPost } from '../backendOperation';
-import { toast, ToastContainer } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
+import { useUser } from "../userContext";
+import { backendLocation, requestPost } from "../backendOperation";
+import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AddPost() {
   const { user } = useUser();
@@ -17,7 +17,10 @@ export default function AddPost() {
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
-    if (selected && (selected.type.startsWith("image/") || selected.type.startsWith("video/"))) {
+    if (
+      selected &&
+      (selected.type.startsWith("image/") || selected.type.startsWith("video/"))
+    ) {
       setFile(selected);
       setPreview(URL.createObjectURL(selected));
     } else {
@@ -44,7 +47,6 @@ export default function AddPost() {
 
     const toastId = toast.loading("Posting...");
 
-    console.log(formData)
     const response = await requestPost(formData);
 
     toast.dismiss(toastId);
@@ -65,14 +67,23 @@ export default function AddPost() {
 
       <div className="postForm">
         <div className="userInfoSection">
-          <div className="posterImage"></div>
+          <div
+            style={{
+              backgroundImage: `url(${backendLocation}${user.profileImage})`,
+              backgroundPosition:"center",
+              backgroundSize:"cover",
+              borderRadius:3
+            }}
+            className="posterImage"
+          ></div>
           <div className="posterDetails">
             <div className="posterName">{user.fullName}</div>
-            <select className="privacySelector" value={privacy} onChange={e => setPrivacy(e.target.value)}>
-              <option value="public">Public</option>
-              <option value="friends">Friends</option>
-              <option value="private">Private</option>
-            </select>
+            <div
+              className="posterName"
+              style={{ fontFamily: "CalibreRegular", fontSize: 16 }}
+            >
+              {user.idNumber}
+            </div>
           </div>
         </div>
 
@@ -86,7 +97,11 @@ export default function AddPost() {
 
           {preview && (
             <div className="imagePreviewContainer">
-              <button type="button" className="removeImageBtn" onClick={removeFile}>
+              <button
+                type="button"
+                className="removeImageBtn"
+                onClick={removeFile}
+              >
                 <CancelXIcon />
               </button>
               {file.type.startsWith("image/") ? (
@@ -103,7 +118,12 @@ export default function AddPost() {
           <div className="attachmentButtons">
             <label className="attachmentButton">
               <div className="iconWrapper">Photo/Video</div>
-              <input type="file" accept="image/*,video/*" hidden onChange={handleFileChange} />
+              <input
+                type="file"
+                accept="image/*,video/*"
+                hidden
+                onChange={handleFileChange}
+              />
             </label>
           </div>
         </div>
