@@ -1,19 +1,18 @@
 import React, { useState } from "react";
-import "../css/settings.css";
-import { changePassword, addProfilePic, deleteUsers } from "../backendOperation";
-import { useUser } from "../userContext";
+import "../css/adminSettings.css";
+import { changePassword, addProfilePic, deleteUsers } from "../backendOperation.js";
 import { toast } from "react-toastify";
+import { useUser } from "../userContext.jsx";
 import { useNavigate } from "react-router-dom";
 
-export default function Settings() {
-  const { user, setUser } = useUser();
-  const navigate = useNavigate();
+export default function AdminSettings() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const { user, setUser } = useUser();
+  const navigate = useNavigate();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -62,21 +61,21 @@ export default function Settings() {
   };
 
   const handlePasswordChange = async (e) => {
+    e.preventDefault();
+
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
+    const requestObject = {
+      userId: user.id,
+      currentPassword: oldPassword,
+      newPassword,
+    };
+
+    const toastId = toast.loading("Changing password...");
     try {
-      e.preventDefault();
-
-      if (newPassword !== confirmPassword) {
-        toast.error("Passwords do not match.");
-        return;
-      }
-
-      const requestObject = {
-        userId: user.id,
-        currentPassword: oldPassword,
-        newPassword,
-      };
-
-      const toastId = toast.loading("Changing password...");
       const response = await changePassword(requestObject);
 
       if (response.success) {
@@ -94,20 +93,19 @@ export default function Settings() {
         toast.error(response.error || "Failed to change password");
       }
     } catch (error) {
-      toast.dismiss();
+      toast.dismiss(toastId);
       toast.error(error.message || "An error occurred");
     }
   };
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm("Are you sure you want to permanently delete your account? This cannot be undone.")) {
+    if (!window.confirm("Are you sure you want to permanently delete your admin account? This cannot be undone.")) {
       return;
     }
 
     const toastId = toast.loading("Deleting account...");
     try {
       const response = await deleteUsers({ userId: user.id });
-      console.log(response)
 
       if (response.message) {
         toast.update(toastId, {
@@ -117,8 +115,8 @@ export default function Settings() {
           autoClose: 2000,
         });
         setTimeout(() => {
-          navigate("/login");
-          setUser(null); // clear user context
+          setUser(null); // Clear the user context
+          navigate("/login"); // Redirect to login
         }, 2000);
       } else {
         toast.update(toastId, {
@@ -139,70 +137,68 @@ export default function Settings() {
   };
 
   return (
-    <div className="settingsContainer">
-      <h1 className="settingsTitle">Account Settings</h1>
+    <div className="adminSettingsContainer">
+      <h1 className="adminSettingsTitle">Admin Account Settings</h1>
 
       {/* Change Password Section */}
-      <div className="settingsSection">
-        <h2 className="sectionTitle">Change Password</h2>
-        <div className="sectionContent">
-          <form className="passwordForm" onSubmit={handlePasswordChange}>
-            <div className="formGroup">
-              <label htmlFor="oldPassword">Old Password</label>
+      <div className="adminSettingsSection">
+        <h2 className="adminSectionTitle">Change Password</h2>
+        <div className="adminSectionContent">
+          <form className="adminPasswordForm" onSubmit={handlePasswordChange}>
+            <div className="adminFormGroup">
+              <label htmlFor="adminOldPassword">Old Password</label>
               <input
                 type="password"
-                id="oldPassword"
-                className="formInput"
+                id="adminOldPassword"
+                className="adminFormInput"
                 placeholder="Enter your current password"
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
               />
             </div>
 
-            <div className="formGroup">
-              <label htmlFor="newPassword">New Password</label>
+            <div className="adminFormGroup">
+              <label htmlFor="adminNewPassword">New Password</label>
               <input
                 type="password"
-                id="newPassword"
-                className="formInput"
+                id="adminNewPassword"
+                className="adminFormInput"
                 placeholder="Enter your new password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
-              <div className="passwordRequirements">
-                Password must be at least 8 characters long and include a mix of
-                letters, numbers, and symbols.
+              <div className="adminPasswordRequirements">
+                Password must be at least 8 characters long and include letters, numbers, and symbols.
               </div>
             </div>
 
-            <div className="formGroup">
-              <label htmlFor="confirmPassword">Confirm New Password</label>
+            <div className="adminFormGroup">
+              <label htmlFor="adminConfirmPassword">Confirm New Password</label>
               <input
                 type="password"
-                id="confirmPassword"
-                className="formInput"
+                id="adminConfirmPassword"
+                className="adminFormInput"
                 placeholder="Confirm your new password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
-              {error && <div className="passwordMismatch">{error}</div>}
             </div>
 
-            <button type="submit" className="saveButton">
-              Save Changes
+            <button type="submit" className="adminSaveButton">
+              Save Password
             </button>
           </form>
         </div>
       </div>
 
-      {/* Change Profile Image Section */}
-      <div className="settingsSection">
-        <h2 className="sectionTitle">Profile Picture</h2>
-        <div className="sectionContent imageSection">
-          <div className="currentImageContainer">
-            <div className="profileImagePreview">
+      {/* Change Profile Picture Section */}
+      <div className="adminSettingsSection">
+        <h2 className="adminSectionTitle">Profile Picture</h2>
+        <div className="adminSectionContent adminImageSection">
+          <div className="adminCurrentImageContainer">
+            <div className="adminProfileImagePreview">
               <div
-                className="profileImage"
+                className="adminProfileImage"
                 style={{
                   backgroundImage: selectedImage
                     ? `url(${selectedImage})`
@@ -214,38 +210,37 @@ export default function Settings() {
                 }}
               ></div>
             </div>
-            <div className="imageInfo">
-              <h3 className="imageTitle">Current Profile Picture</h3>
-              <p className="imageDescription">
-                Your profile picture appears on your profile page and in your
-                posts across the platform.
+            <div className="adminImageInfo">
+              <h3 className="adminImageTitle">Current Profile Picture</h3>
+              <p className="adminImageDescription">
+                This picture represents you across the platform as an admin.
               </p>
             </div>
           </div>
 
-          <div className="imageUploadControls">
-            <div className="uploadButtonContainer">
-              <label htmlFor="imageUpload" className="uploadButton">
+          <div className="adminImageUploadControls">
+            <div className="adminUploadButtonContainer">
+              <label htmlFor="adminImageUpload" className="adminUploadButton">
                 Choose New Image
                 <input
                   type="file"
-                  id="imageUpload"
-                  className="hiddenInput"
+                  id="adminImageUpload"
+                  className="adminHiddenInput"
                   accept="image/*"
                   onChange={handleImageChange}
                 />
               </label>
-              <span className="fileRequirements">
-                JPG, PNG or GIF. Maximum size 5MB.
+              <span className="adminFileRequirements">
+                JPG, PNG, or GIF. Maximum size 5MB.
               </span>
             </div>
 
-            <div className="imageActionButtons">
-              <button className="saveImageButton" onClick={handleSaveImage}>
+            <div className="adminImageActionButtons">
+              <button className="adminSaveImageButton" onClick={handleSaveImage}>
                 Save New Image
               </button>
               <button
-                className="cancelButton"
+                className="adminCancelButton"
                 onClick={() => {
                   setSelectedImage(null);
                   setSelectedFile(null);
@@ -258,15 +253,15 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* Deactivate Account Section */}
-      <div className="settingsSection dangerZone">
-        <h2 className="sectionTitle">Deactivate Account</h2>
-        <div className="sectionContent">
-          <div className="warningText">
-            Deactivating your account will permanently delete your profile, posts, and chats.
+      {/* Danger Zone Section */}
+      <div className="adminSettingsSection adminDangerZone">
+        <h2 className="adminSectionTitle">Danger Zone</h2>
+        <div className="adminSectionContent">
+          <div className="adminWarningText">
+            Deleting or deactivating your admin account is a serious action. Please proceed with caution.
           </div>
-          <button className="deactivateButton" onClick={handleDeleteAccount}>
-            Delete My Account
+          <button className="adminDeactivateButton" onClick={handleDeleteAccount}>
+            Delete Admin Account
           </button>
         </div>
       </div>

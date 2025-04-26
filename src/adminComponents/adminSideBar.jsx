@@ -39,10 +39,10 @@ export default function AdminSidebar({ isOpen, isMobile }) {
 
 const AdminSidebarLinks = () => (
     <>
-      <NavItem to="/admin/home/dashboard">Dashboard</NavItem>
-      <NavItem to="/admin/home/manageUsers">Manage Users</NavItem>
-      <NavItem to="/admin/home/manageRequests">Manage Requests</NavItem>
-      <NavItem to="/admin/home/settings">Settings</NavItem>
+      <NavItem to="/admin/dashboard">Dashboard</NavItem>
+      <NavItem to="/admin/manageUsers">Manage Users</NavItem>
+      <NavItem to="/admin/manageRequests">Manage Requests</NavItem>
+      <NavItem to="/admin/settings">Settings</NavItem>
     </>
   );
   

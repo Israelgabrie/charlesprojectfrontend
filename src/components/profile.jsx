@@ -49,7 +49,7 @@ export default function Profile() {
         <div
           key={post._id}
           className="post"
-          style={{ backgroundColor: "white", width: "70%" }}
+          style={{ backgroundColor: "white", width: "75%",marginLeft:"auto",marginRight:"auto" }}
         >
           {/* Post Header */}
           <div className="postTopBar">
@@ -122,7 +122,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="profileContainer">
+    <div className="profileContainer" >
       <div className="profileHeader">
         <div
           className="coverPhoto"

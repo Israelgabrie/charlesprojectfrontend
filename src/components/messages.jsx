@@ -11,6 +11,7 @@ import {
 import { useUser } from "../userContext";
 import { formatTimeFromISO, getRelativeTime } from "../helperFuntions";
 import { useNavigate, useParams } from "react-router-dom";
+import { useActiveUsers } from "../activeUsersContext";
 
 export default function Messages() {
   const { user } = useUser();
@@ -22,6 +23,7 @@ export default function Messages() {
   const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState("");
   const bottomRef = useRef(null);
+  const { activeUsers } = useActiveUsers();
 
   useEffect(() => {
     const handleNewMessage = (data) => {
@@ -109,15 +111,17 @@ export default function Messages() {
   useEffect(() => {
     async function getCurrentChatMessages() {
       if (chatId) {
-        const response = await getMessages({ chatId });
+        const response = await getMessages({ chatId ,userId:user.id});
         if (response.success) {
+          console.log(response)
           setMessages(response.messages);
           const chatInfo = chats.find((c) => c.chatId === chatId);
           if (chatInfo) {
             setCurrentChat(chatInfo);
           }
         } else {
-          navigate("/homepage/messages");
+          navigate("/homepage/messages")
+          toast.error(response.error || response.message || "Failed To Load Messages")
         }
       }
     }
@@ -159,6 +163,17 @@ export default function Messages() {
     }
   }, [chats]);
 
+  useEffect(() => {
+    console.log("message active users");
+    console.log(activeUsers);
+    console.log(currentChat.chatId)
+    // if(activeUsers.includes(currentChat.chatId)){
+    //   console.log("yipee")
+    // }else{
+    //   console.log("ypoooo")
+    // }
+  }, [activeUsers,currentChat.chatId]);
+
   return (
     <div className="messagesContainer">
       {/* Left Panel */}
@@ -190,7 +205,22 @@ export default function Messages() {
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
-              ></div>
+              >
+                {activeUsers?.includes(chat.chatId) ? (
+                  <div
+                    className="activeBox"
+                    style={{
+                      width: 10,
+                      height: 10,
+                      backgroundColor: "green",
+                      borderRadius: "50%",
+                      position: "relative",
+                      marginTop: "80%",
+                      marginLeft: "auto",
+                    }}
+                  ></div>
+                ) : null}
+              </div>
               <div className="friendInfo">
                 <div className="friendName">{chat.fullName}</div>
                 <div className="lastMessage">{chat.lastMessage}</div>
@@ -215,7 +245,7 @@ export default function Messages() {
             ></div>
             <div className="friendInfo">
               <div className="friendName">{currentChat.fullName}</div>
-              <div className="onlineStatus">Online</div>
+              <div className="onlineStatus">{activeUsers?.includes(currentChat.chatId) ? "Online" : null}</div>
             </div>
           </div>
           <div className="chatHeaderRight">

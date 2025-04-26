@@ -445,3 +445,27 @@ export async function dashBoardStats(requestObject) {
     };
   }
 }
+
+export async function deleteUsers(requestObject) {
+  try {
+    const response = await axios.post(
+      `${backendLocation}/deleteUser`,
+      requestObject, // <- userId(s) sent here
+      {
+        withCredentials: true,
+      }
+    );
+
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error deleting user(s):",
+      error.response?.data || error.message
+    );
+    return {
+      success: false,
+      error: error.response?.data || "Something went wrong",
+    };
+  }
+}

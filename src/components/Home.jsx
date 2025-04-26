@@ -14,7 +14,6 @@ import {
 import { useUser } from "../userContext";
 import { toast } from "react-toastify";
 import ClipLoader from "react-spinners/ClipLoader";
-import "../css/home.css";
 import { getTimeAgo } from "../helperFuntions.js";
 import {
   CancelXIcon,
@@ -23,8 +22,9 @@ import {
   SaveIcon,
   ShareIcon,
 } from "../SvgComponents";
+import "../css/home.css";
 
-export default function Home({}) {
+export default function Home() {
   const { user } = useUser();
   const [feed, setFeed] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,12 +37,11 @@ export default function Home({}) {
   const [savedPosts, setSavedPosts] = useState([]);
   const [filteredFeed, setFilteredFeed] = useState([]);
 
-
   const location = useLocation();
 
   // Use URLSearchParams to get query params
   const queryParams = new URLSearchParams(location.search);
-  const searchValue = queryParams.get("search"); // "izzy"
+  const searchValue = queryParams.get("search");
 
   useEffect(() => {
     if (user?.following?.length) {
@@ -201,81 +200,115 @@ export default function Home({}) {
       setFilteredFeed(feed);
     }
   }, [feed, searchValue]);
-  
 
-
+  useEffect(() => {
+    console.log(comments);
+  }, [comments]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", overflow: "hidden" }}>
-      <div className="postsContainer" style={{ overflowY: "scroll", height: "500px", width: "55%" }}>
+    <div className="feed-layout">
+      <div className="feed-posts-container">
         {loading ? (
-          <div>Loading posts...</div>
+          <div className="feed-loading">
+            <ClipLoader size={40} color="#6366f1" />
+            <p>Loading posts...</p>
+          </div>
         ) : filteredFeed.length === 0 ? (
-          <div>No posts found.</div>
+          <div className="feed-empty">No posts found.</div>
         ) : (
           filteredFeed.map((post) => {
             const isLiked = post.likes?.includes(user.id);
             const isSaved = savedPosts.includes(post._id);
             return (
-              <div key={post._id} className="post" style={{ backgroundColor: "white" }}>
+              <div key={post._id} className="feed-post">
                 {/* Post Header */}
-                <div className="postTopBar">
-                  <div className="postTopBarRightSide">
-                    <div className="posterImage" >
-                      {post.author?.profileImage && (                
-                        <div style={{backgroundImage:`url(${backendLocation}${post.author?.profileImage})`, backgroundSize:"cover",width: 40, height: 40,borderRadius:0}} alt="profile" ></div>
+                <div className="feed-post-header">
+                  <div className="feed-post-user">
+                    <div className="feed-user-avatar">
+                      {post.author?.profileImage && (
+                        <div
+                          className="feed-avatar-image"
+                          style={{
+                            backgroundImage: `url(${backendLocation}${post.author?.profileImage})`,
+                          }}
+                        ></div>
                       )}
                     </div>
-                    <div className="posterDetails">
-                      <div className="posterName">{post.author?.fullName || "Unknown"}</div>
+                    <div className="feed-user-info">
+                      <div className="feed-user-name">
+                        {post.author?.fullName || "Unknown"}
+                      </div>
                       {post.author?._id !== user.id && (
-                        <div className="followBtn" onClick={() => handleFollow(post.author._id)} style={{ cursor: "pointer", color: followedUsers[post.author._id] ? "black" : "white" }}>
-                          {followedUsers[post.author._id] ? "Unfollow" : "Follow"}
-                        </div>
+                        <button
+                          className={`feed-follow-btn ${
+                            followedUsers[post.author._id] ? "following" : ""
+                          }`}
+                          onClick={() => handleFollow(post.author._id)}
+                        >
+                          {followedUsers[post.author._id]
+                            ? "Unfollow"
+                            : "Follow"}
+                        </button>
                       )}
                     </div>
                   </div>
-                  <div className="postTopSideLeftSide">
-                    <div className="postTopSideTime">{getTimeAgo(post.createdAt)}</div>
-                    
+                  <div className="feed-post-meta">
+                    <div className="feed-post-time">
+                      {getTimeAgo(post.createdAt)}
+                    </div>
                   </div>
                 </div>
 
-                <div className="postText">{post.content}</div>
+                <div className="feed-post-content">{post.content}</div>
 
                 {post.image && (
                   <div
-                    className="postImage"
+                    className="feed-post-image"
                     style={{
                       backgroundImage: `url("${backendLocation}${post.image}")`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      height: "400px",
-                      width: "100%",
                     }}
                   />
                 )}
 
-                {post.video && typeof post.video === "string" && post.video.trim() !== "" && (
-                  <div className="postVideo">
-                    <video controls width="100%">
-                      <source src={`${backendLocation}${post.video}`} type="video/mp4" />
-                    </video>
-                  </div>
-                )}
+                {post.video &&
+                  typeof post.video === "string" &&
+                  post.video.trim() !== "" && (
+                    <div className="feed-post-video">
+                      <video controls width="100%">
+                        <source
+                          src={`${backendLocation}${post.video}`}
+                          type="video/mp4"
+                        />
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  )}
 
-                <div className="postActionBar" style={{ gap: 10 }}>
-                  <div className="postActionBox" onClick={() => handleLike(post._id)} style={{ cursor: "pointer" }}>
-                    <LikeIcon color={isLiked ? "black" : "white"} />
-                    <div className="postActionTextDetails">{post.likes?.length || 0}</div>
-                  </div>
-                  <div className="postActionBox" onClick={() => handleCommentIconClick(post._id)}>
+                <div className="feed-post-actions">
+                  <button
+                    className={`feed-action-btn ${isLiked ? "active" : ""}`}
+                    onClick={() => handleLike(post._id)}
+                  >
+                    <LikeIcon color={isLiked ? "#6366f1" : "#666"} />
+                    <span className="feed-action-count">
+                      {post.likes?.length || 0}
+                    </span>
+                  </button>
+                  <button
+                    className="feed-action-btn"
+                    onClick={() => handleCommentIconClick(post._id)}
+                  >
                     <CommentIcon />
-                    <div className="postActionTextDetails">{post.comments?.length || 0}</div>
-                  </div>
-                  <div className="postActionBox" onClick={() => handleSave(post._id)} style={{ cursor: "pointer" }}>
-                    <SaveIcon color={isSaved ? "black" : "white"} />
-                  </div>
+                    <span className="feed-action-count">
+                      {post.comments?.length || 0}
+                    </span>
+                  </button>
+                  <button
+                    className={`feed-action-btn ${isSaved ? "active" : ""}`}
+                    onClick={() => handleSave(post._id)}
+                  >
+                    <SaveIcon color={isSaved ? "#6366f1" : "#666"} />
+                  </button>
                 </div>
               </div>
             );
@@ -285,45 +318,61 @@ export default function Home({}) {
 
       {/* Comments Section */}
       {showComments && (
-        <div className="commentsContainer" style={{ width: "45%", height: "500px" }}>
-          <div className="commentSectionTop">
-            <div className="postCommentHead">Comment Section</div>
-            <span onClick={() => setShowComments(false)} style={{ cursor: "pointer" }}>
+        <div className="feed-comments-container">
+          <div className="feed-comments-header">
+            <h3 className="feed-comments-title">Comments</h3>
+            <button
+              className="feed-close-btn"
+              onClick={() => setShowComments(false)}
+            >
               <CancelXIcon />
-            </span>
+            </button>
           </div>
-          <div className="commentsBox" style={{ height: "78%", overflowY: "scroll", padding: "10px" }}>
+          <div className="feed-comments-list">
             {commentLoading ? (
-              <div style={{ display: "flex", justifyContent: "center", paddingTop: "20px" }}>
-                <ClipLoader size={30} />
+              <div className="feed-comments-loading">
+                <ClipLoader size={30} color="#6366f1" />
               </div>
             ) : !Array.isArray(comments) || comments.length === 0 ? (
-              <div>No comments yet.</div>
+              <div className="feed-comments-empty">No comments yet.</div>
             ) : (
               comments.map((comment, index) => (
-                <div className="comment" key={comment._id || index}>
-                  <div className="commentBoxTop">
-                    <div className="posterImage"></div>
-                    <div className="commentBoxDetails">
-                      <div className="commentBoxName">{comment.user?.fullName || "Unknown"}</div>
-                      <div className="commentBoxTme">{getTimeAgo(comment.createdAt)}</div>
+                <div className="feed-comment" key={comment._id || index}>
+                  <div className="feed-comment-header">
+                    <div
+                      className="feed-comment-avatar"
+                      style={{
+                        backgroundImage: `url(${backendLocation}${comment?.profileImage})`,
+                        backgroundPosition:"center",
+                        backgroundSize:"cover"
+                      }}
+                    ></div>
+                    <div className="feed-comment-meta">
+                      <div className="feed-comment-name">
+                        {comment?.fullName || "Unknown"}
+                      </div>
+                      <div className="feed-comment-time">
+                        {getTimeAgo(comment.createdAt)}
+                      </div>
                     </div>
                   </div>
-                  <div className="commentText">{comment.comment}</div>
+                  <div className="feed-comment-content">{comment.comment}</div>
                 </div>
               ))
             )}
           </div>
 
-          <form onSubmit={handleAddComment} style={{ display: "flex", gap: 10, padding: "10px" }}>
+          <form className="feed-comment-form" onSubmit={handleAddComment}>
             <input
-              className="form-control"
+              className="feed-comment-input"
               type="text"
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
               placeholder="Add a comment"
             />
-            <button className="navBarBtn btn" type="submit">+</button>
+            <button className="feed-comment-btn" type="submit">
+              +
+            </button>
           </form>
         </div>
       )}

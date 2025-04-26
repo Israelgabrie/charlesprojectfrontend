@@ -17,11 +17,9 @@ export default function ManageRequests() {
 
   const fetchPendingPosts = async () => {
     setLoading(true);
-    toast.info("Fetching pending posts...");
     const data = await getPendingPosts({ id: user.id });
     if (data.success) {
       setPosts(data.posts);
-      toast.success("Pending posts loaded.");
     } else {
       toast.error(data.message || "Failed to fetch posts");
     }
@@ -62,7 +60,7 @@ export default function ManageRequests() {
         <div>No pending posts to review.</div>
       ) : (
         posts.map((post) => (
-          <div key={post._id} className="post" style={{ backgroundColor: "white" }}>
+          <div key={post._id} className="post" style={{ backgroundColor: "white",width:"80%",margin:"auto" }}>
             <div className="postTopBar">
               <div className="postTopBarRightSide">
                 <div className="posterImage">
@@ -100,6 +98,7 @@ export default function ManageRequests() {
                   backgroundPosition: "center",
                   height: "400px",
                   width: "400px",
+                  margin:"auto"
                 }}
               />
             )}

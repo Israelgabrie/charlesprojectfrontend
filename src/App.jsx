@@ -14,12 +14,14 @@ import ManageRequests from './adminComponents/manageRequests';
 import { UserProvider } from './userContext';
 import NotFoundPage from './components/errorPage';
 import AdminDashboard from './adminComponents/dashboard';
+import ManageUsers from './adminComponents/manageUsers';
+import AdminSettings from './adminComponents/adminSettings';
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Login />,
-    errorElement:<NotFoundPage/>
+    errorElement: <NotFoundPage />,
   },
   {
     path: "/login",
@@ -35,42 +37,52 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <Navigate to="/admin/home" replace />,
+    element: <Navigate to="/admin/dashboard" replace />,
   },
   {
-    path: "/admin/home",
+    path: "/admin/dashboard",
     element: <AdminHomePage />,
     children: [
       {
         index: true,
-        element: <div>Admin Dashboard Coming Soon</div>,
+        element: <AdminDashboard />,
       },
+    ],
+  },
+  {
+    path: "/admin/manageRequests",
+    element: <AdminHomePage />,
+    children: [
       {
-        path: "manageRequests", // ✅ RELATIVE path, NOT "/manageRequests"
-        element: <ManageRequests/>,
+        index: true,
+        element: <ManageRequests />,
       },
+    ],
+  },
+  {
+    path: "/admin/manageUsers",
+    element: <AdminHomePage />,
+    children: [
       {
-        path: "manageUsers",
-        element: <div>Manage Users Coming Soon</div>,
+        index: true,
+        element: <ManageUsers/>,
       },
+    ],
+  },
+  {
+    path: "/admin/settings",
+    element: <AdminHomePage />,
+    children: [
       {
-        path: "settings",
-        element: <div>Admin Settings Coming Soon</div>,
+        index: true,
+        element: <AdminSettings/>,
       },
-      {
-        path: "dashboard",
-        element: <AdminDashboard/>,
-      }
     ],
   },
   {
     path: "/homepage",
     element: <Homepage />,
     children: [
-      {
-        index: true,
-        element: <Navigate to="home" />,
-      },
       {
         path: "home",
         element: <Home />,

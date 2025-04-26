@@ -1,0 +1,250 @@
+.adminSettingsContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .adminSettingsTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+  
+  .adminSettingsSection {
+    margin-bottom: 3rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  .adminSectionTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #111827;
+  }
+  
+  .adminSectionContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .adminPasswordForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .adminFormGroup {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .adminFormGroup label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #374151;
+  }
+  
+  .adminFormInput {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  
+  .adminFormInput:focus {
+    border-color: #6366f1;
+  }
+  
+  .adminPasswordRequirements {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+  
+  .adminSaveButton {
+    padding: 0.75rem 1.5rem;
+    background-color: #6366f1;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    align-self: flex-start;
+  }
+  
+  .adminSaveButton:hover {
+    background-color: #4f46e5;
+  }
+  
+  /* Profile Picture Section */
+  .adminImageSection {
+    flex-direction: column;
+  }
+  
+  .adminCurrentImageContainer {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .adminProfileImagePreview {
+    width: 100px;
+    height: 100px;
+    border-radius: 9999px;
+    overflow: hidden;
+    background-color: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .adminProfileImage {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .adminImageInfo {
+    max-width: 400px;
+  }
+  
+  .adminImageTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+  }
+  
+  .adminImageDescription {
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+  
+  .adminUploadButtonContainer {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .adminUploadButton {
+    padding: 0.75rem 1.5rem;
+    background-color: #6366f1;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    text-align: center;
+    display: inline-block;
+    transition: background-color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .adminUploadButton:hover {
+    background-color: #4f46e5;
+  }
+  
+  .adminHiddenInput {
+    display: none;
+  }
+  
+  .adminFileRequirements {
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+  
+  /* Image Action Buttons */
+  .adminImageActionButtons {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .adminSaveImageButton,
+  .adminCancelButton {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: none;
+  }
+  
+  .adminSaveImageButton {
+    background-color: #6366f1;
+    color: white;
+  }
+  
+  .adminSaveImageButton:hover {
+    background-color: #4f46e5;
+  }
+  
+  .adminCancelButton {
+    background-color: #e5e7eb;
+    color: #374151;
+  }
+  
+  .adminCancelButton:hover {
+    background-color: #d1d5db;
+  }
+  
+  /* Danger Zone */
+  .adminDangerZone {
+    border: 1px solid #f87171;
+    background-color: #fef2f2;
+  }
+  
+  .adminWarningText {
+    color: #b91c1c;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .adminDeactivateButton {
+    padding: 0.75rem 1.5rem;
+    background-color: #ef4444;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s;
+  }
+  
+  .adminDeactivateButton:hover {
+    background-color: #dc2626;
+  }
+  
+  /* Responsive */
+  @media (max-width: 640px) {
+    .adminCurrentImageContainer {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .adminImageInfo {
+      text-align: center;
+    }
+  
+    .adminImageActionButtons {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  

@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useUser } from '../userContext';
-import { useNavigate, useLocation, Outlet } from 'react-router-dom';
-import AdminNavbar from './adminNavBar';
-import AdminSidebar from './adminSideBar';
-import { getLoggedInUser } from '../backendOperation';
-import { toast, ToastContainer } from 'react-toastify';
-import { socket } from '../backendOperation';
+import React, { useEffect, useState } from "react";
+import { useUser } from "../userContext";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
+import AdminNavbar from "./adminNavBar";
+import AdminSidebar from "./adminSideBar";
+import { getLoggedInUser } from "../backendOperation";
+import { toast, ToastContainer } from "react-toastify";
+import { socket } from "../backendOperation";
+import LoadingPage from "../components/loadingComponent";
 
 export default function AdminHomePage() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,12 +14,7 @@ export default function AdminHomePage() {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
-  
-
-  socket.on("connect", () => {
-    console.log("Connected to socket server");
-  }
-  );
+  const [manageUserStats, setManageUserStats] = useState({});
 
   useEffect(() => {
     const checkUser = async () => {
@@ -51,15 +47,73 @@ export default function AdminHomePage() {
     checkUser();
   }, []);
 
+
+
+
+  useEffect(() => {
+    if (user?.id) {
+      socket.emit("joinAdminRoom");
+      socket.emit("getManageUsersStats", user?.id, (data) => {
+        if (data.success) {
+          console.log(data);
+          setManageUserStats({
+            activeUsers: data.activeUsers,
+            totalStudents: data.totalStudents,
+            totalUsers: data.totalUsers,
+            usersLastWeek: data.usersLastWeek,
+            studentUsers: data.studentUsers,
+          });
+        } else {
+          toast.error(response.message || "Failed To Get Manage Users Stats");
+        }
+      });
+    }
+  }, [user?.id]);
+
+  
+  useEffect(() => {
+    socket.emit("joinAdminRoom");
+  
+    const handleOnline = (userId) => {
+      if (userId) {
+        setManageUserStats((prevStats) => ({
+          ...prevStats,
+          studentUsers: prevStats.studentUsers.map((student) =>
+            student._id === userId ? { ...student, active: true } : student
+          ),
+        }));
+      }
+    };
+  
+    const handleOffline = (userId) => {
+      if (userId) {
+        setManageUserStats((prevStats) => ({
+          ...prevStats,
+          studentUsers: prevStats.studentUsers.map((student) =>
+            student._id === userId ? { ...student, active: false } : student
+          ),
+        }));
+      }
+    };
+  
+    socket.on("newUserOnline", handleOnline);
+    socket.on("newUserOffline", handleOffline);
+  
+    return () => {
+      socket.off("newUserOnline", handleOnline);
+      socket.off("newUserOffline", handleOffline);
+    };
+  }, []);
+  
+  
+
   const isOnlyDashboard = location.pathname === "/admin/dashboard";
 
   if (isLoading) {
     return (
       <div>
         <ToastContainer />
-        <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
-          <p>Loading Admin Dashboard...</p>
-        </div>
+        <LoadingPage />
       </div>
     );
   }
@@ -95,7 +149,7 @@ export default function AdminHomePage() {
             padding: "10px",
           }}
         >
-          <Outlet />
+          <Outlet context={{ manageUserStats, setManageUserStats }} />
         </div>
       </div>
 

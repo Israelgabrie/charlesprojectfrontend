@@ -4,9 +4,10 @@ import Navbar from "./navbar";
 import SideBar from "./sidebar";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../userContext";
-import { getLoggedInUser } from "../backendOperation";
+import { getLoggedInUser, socket } from "../backendOperation";
 import { toast, ToastContainer } from "react-toastify";
 import LoadingPage from "./loadingComponent";
+import { ActiveUsersContext } from "../activeUsersContext"; // adjust path
 
 export default function Homepage() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,11 +15,13 @@ export default function Homepage() {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [activeUsers, setActiveUsers] = useState([]);
 
   useEffect(() => {
     const checkUser = async () => {
       try {
         if (user) {
+          console.log(user);
           if (user.role === "admin") {
             navigate("/admin");
           } else {
@@ -46,13 +49,69 @@ export default function Homepage() {
     checkUser();
   }, []);
 
+  // This section ahndles the suer acive status
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (user?.id) {
+        socket.emit("setInActive", user.id, () => {
+          // Cleanup
+        });
+        // Give it a chance to send before unload
+        socket.disconnect(); // optionally force close
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (user?.id) {
+      socket.emit("setActive", user.id, (data) => {
+        if (data.success) {
+          setActiveUsers(data.activeFriends.map((f) => f.chatId));
+        } else {
+          toast.error(data.message || "Failed To Set User Active");
+        }
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    socket.on("userActive", ({ chatId }) => {
+      toast.info("A new user became active in chat");
+      setActiveUsers((prev) => {
+        if (!prev.includes(chatId)) return [...prev, chatId];
+        return prev;
+      });
+    });
+
+    socket.on("userInactive", ({ chatId }) => {
+      toast.info("A user became inactive in chat");
+      setActiveUsers((prev) => prev.filter((id) => id !== chatId));
+    });
+
+    return () => {
+      socket.off("userActive");
+      socket.off("userInactive");
+    };
+  }, []);
+
+
+
+
+
   const isOnlyHomePage = location.pathname === "/homePage";
 
   if (isLoading) {
     return (
       <div>
         <ToastContainer />
-        <LoadingPage/>
+        <LoadingPage />
       </div>
     );
   }
@@ -88,7 +147,9 @@ export default function Homepage() {
             padding: "10px",
           }}
         >
-          <Outlet />
+          <ActiveUsersContext.Provider value={{ activeUsers }}>
+            <Outlet />
+          </ActiveUsersContext.Provider>
         </div>
       </div>
 

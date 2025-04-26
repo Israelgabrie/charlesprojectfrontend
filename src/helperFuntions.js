@@ -120,3 +120,29 @@ function getFormattedDate() {
   return today.toLocaleDateString("en-US", options);
 }
 
+
+export function formatDateAndHandleErrors(dateString) {
+  try {
+    // Check if the date string is valid
+    const date = new Date(dateString);
+    
+    if (isNaN(date)) {
+      throw new Error('Invalid Date');
+    }
+
+    // Convert to day/month/year format
+    const formattedDate = `${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}/${
+      date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+    }/${date.getFullYear()}`;
+    
+    // You can save the formatted date here (e.g., set state or send to server)
+
+    // Return the formatted date
+    return formattedDate;
+  } catch (error) {
+    // Show error toast notification
+    toast.error('Invalid date format. Please provide a valid ISO string.');
+    return null;
+  }
+}
+
