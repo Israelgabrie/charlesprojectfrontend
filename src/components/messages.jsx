@@ -2,12 +2,7 @@ import React, { useEffect, useState, useRef, useMemo } from "react";
 import "../css/messages.css";
 import { CancelXIcon } from "../SvgComponents";
 import { toast } from "react-toastify";
-import {
-  backendLocation,
-  getChats,
-  getMessages,
-  socket,
-} from "../backendOperation";
+import { backendLocation, getChats, getMessages, socket } from "../backendOperation";
 import { useUser } from "../userContext";
 import { formatTimeFromISO, getRelativeTime } from "../helperFuntions";
 import { useNavigate, useParams } from "react-router-dom";
@@ -22,8 +17,31 @@ export default function Messages() {
   const [currentChat, setCurrentChat] = useState({});
   const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState("");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showChatPanel, setShowChatPanel] = useState(false);
   const bottomRef = useRef(null);
   const { activeUsers } = useActiveUsers();
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setShowChatPanel(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Show chat panel when chatId changes on mobile
+  useEffect(() => {
+    if (chatId && isMobile) {
+      setShowChatPanel(true);
+    }
+  }, [chatId, isMobile]);
 
   useEffect(() => {
     const handleNewMessage = (data) => {
@@ -43,7 +61,6 @@ export default function Messages() {
         ]);
       }
 
-      // Always update chat preview + sort later via useMemo
       setChats((prev) => {
         const updated = prev.map((chat) =>
           chat.chatId === data.chatId
@@ -52,14 +69,14 @@ export default function Messages() {
                 lastMessage: data.messageData.content,
                 time: new Date().toISOString(),
               }
-            : chat
+            : chat,
         );
 
         const exists = updated.some((c) => c.chatId === data.chatId);
         if (!exists) {
           updated.push({
             chatId: data.chatId,
-            fullName: "Unknown", // fallback if new
+            fullName: "Unknown",
             lastMessage: data.messageData.content,
             time: new Date().toISOString(),
           });
@@ -111,17 +128,17 @@ export default function Messages() {
   useEffect(() => {
     async function getCurrentChatMessages() {
       if (chatId) {
-        const response = await getMessages({ chatId ,userId:user.id});
+        const response = await getMessages({ chatId, userId: user.id });
         if (response.success) {
-          console.log(response)
+          console.log(response);
           setMessages(response.messages);
           const chatInfo = chats.find((c) => c.chatId === chatId);
           if (chatInfo) {
             setCurrentChat(chatInfo);
           }
         } else {
-          navigate("/homepage/messages")
-          toast.error(response.error || response.message || "Failed To Load Messages")
+          navigate("/homepage/messages");
+          toast.error(response.error || response.message || "Failed To Load Messages");
         }
       }
     }
@@ -132,23 +149,17 @@ export default function Messages() {
   async function sendMessage() {
     if (!messageText.trim()) return;
 
-    socket.emit(
-      "addMessage",
-      { type: "text", value: messageText, userId: user.id, chatId },
-      (data) => {
-        if (data.success) {
-          setMessageText("");
-        }
+    socket.emit("addMessage", { type: "text", value: messageText, userId: user.id, chatId }, (data) => {
+      if (data.success) {
+        setMessageText("");
       }
-    );
+    });
   }
 
   const sortedAndFilteredChats = useMemo(() => {
     return [...chats]
-      .filter((chat) =>
-        chat.fullName.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      .sort((a, b) => new Date(b.time) - new Date(a.time)); // newest at top
+      .filter((chat) => chat.fullName.toLowerCase().includes(searchTerm.toLowerCase()))
+      .sort((a, b) => new Date(b.time) - new Date(a.time));
   }, [chats, searchTerm]);
 
   useEffect(() => {
@@ -163,21 +174,30 @@ export default function Messages() {
     }
   }, [chats]);
 
-  useEffect(() => {
-    console.log("message active users");
-    console.log(activeUsers);
-    console.log(currentChat.chatId)
-    // if(activeUsers.includes(currentChat.chatId)){
-    //   console.log("yipee")
-    // }else{
-    //   console.log("ypoooo")
-    // }
-  }, [activeUsers,currentChat.chatId]);
+  const handleChatSelect = (chat) => {
+    navigate(`/homepage/messages/${chat.chatId}`);
+    setCurrentChat(chat);
+    if (isMobile) {
+      setShowChatPanel(true);
+    }
+  };
+
+  const handleBackToChats = () => {
+    if (isMobile) {
+      setShowChatPanel(false);
+      navigate("/homepage/messages");
+    } else {
+      navigate("/homepage/messages");
+    }
+  };
 
   return (
     <div className="messagesContainer">
-      {/* Left Panel */}
-      <div className="friendsListPanel">
+      {/* Mobile Overlay */}
+      {isMobile && showChatPanel && <div className="mobileOverlay" onClick={() => setShowChatPanel(false)} />}
+
+      {/* Left Panel - Friends List */}
+      <div className={`friendsListPanel ${isMobile && showChatPanel ? "hidden" : ""}`}>
         <div className="searchContainer">
           <input
             type="text"
@@ -193,10 +213,7 @@ export default function Messages() {
             <div
               key={chat.chatId}
               className={`friendItem ${chatId === chat.chatId ? "active" : ""}`}
-              onClick={() => {
-                navigate(`/homepage/messages/${chat.chatId}`);
-                setCurrentChat(chat);
-              }}
+              onClick={() => handleChatSelect(chat)}
             >
               <div
                 className="friendAvatar"
@@ -205,22 +222,7 @@ export default function Messages() {
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
-              >
-                {activeUsers?.includes(chat.chatId) ? (
-                  <div
-                    className="activeBox"
-                    style={{
-                      width: 10,
-                      height: 10,
-                      backgroundColor: "green",
-                      borderRadius: "50%",
-                      position: "relative",
-                      marginTop: "80%",
-                      marginLeft: "auto",
-                    }}
-                  ></div>
-                ) : null}
-              </div>
+              />
               <div className="friendInfo">
                 <div className="friendName">{chat.fullName}</div>
                 <div className="lastMessage">{chat.lastMessage}</div>
@@ -231,10 +233,26 @@ export default function Messages() {
         </div>
       </div>
 
-      {/* Right Panel */}
-      <div className="chatPanel" style={{ display: chatId ? "flex" : "none" }}>
+      {/* Right Panel - Chat */}
+      <div
+        className={`chatPanel ${isMobile ? "mobile" : ""} ${isMobile && showChatPanel ? "show" : ""}`}
+        style={{ display: chatId ? "flex" : "none" }}
+      >
         <div className="chatHeader">
           <div className="chatHeaderLeft">
+            {isMobile && (
+              <button className="backButton" onClick={handleBackToChats}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M15 18L9 12L15 6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            )}
             <div
               className="friendAvatar"
               style={{
@@ -242,35 +260,26 @@ export default function Messages() {
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
-            ></div>
+            />
             <div className="friendInfo">
               <div className="friendName">{currentChat.fullName}</div>
-              <div className="onlineStatus">{activeUsers?.includes(currentChat.chatId) ? "Online" : null}</div>
+              {/* <div className="onlineStatus">{activeUsers.includes(currentChat.chatId) ? "Online" : "Offline"}</div> */}
             </div>
           </div>
           <div className="chatHeaderRight">
-            <div
-              className="headerIcon"
-              onClick={() => navigate("/homepage/messages")}
-            >
-              <CancelXIcon />
-            </div>
+            {!isMobile && (
+              <div className="headerIcon" onClick={handleBackToChats}>
+                <CancelXIcon />
+              </div>
+            )}
           </div>
         </div>
 
         <div className="messageThread">
-          <div className="dateMarker">
-            <span>Today</span>
-          </div>
-
           {messages.map((message) => (
             <div
               key={message._id}
-              className={`messageItem ${
-                message.sender._id?.toString() === user.id?.toString()
-                  ? "user"
-                  : "friend"
-              }`}
+              className={`messageItem ${message.sender._id?.toString() === user.id?.toString() ? "user" : "friend"}`}
             >
               {message.sender._id?.toString() === user.id?.toString() ? null : (
                 <div
@@ -280,17 +289,14 @@ export default function Messages() {
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
-                ></div>
+                />
               )}
               <div className="messageContent">
                 <div className="messageBubble">{message.content}</div>
                 <div
                   className="messageTime"
                   style={{
-                    marginRight:
-                      message.sender._id?.toString() === user.id?.toString()
-                        ? ""
-                        : "auto",
+                    marginRight: message.sender._id?.toString() === user.id?.toString() ? "" : "auto",
                   }}
                 >
                   {formatTimeFromISO(message.createdAt)}
@@ -308,10 +314,10 @@ export default function Messages() {
             sendMessage();
           }}
         >
-          <div className="attachmentIcons">
+          {/* <div className="attachmentIcons">
             <div className="attachmentIcon">📎</div>
             <div className="attachmentIcon">😊</div>
-          </div>
+          </div> */}
           <input
             type="text"
             className="messageInput"

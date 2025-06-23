@@ -49,57 +49,104 @@ export default function Homepage() {
     checkUser();
   }, []);
 
-  // This section ahndles the suer acive status
+  // // This section ahndles the suer acive status
 
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (user?.id) {
-        socket.emit("setInActive", user.id, () => {
-          // Cleanup
-        });
-        // Give it a chance to send before unload
-        socket.disconnect(); // optionally force close
-      }
-    };
+  // useEffect(() => {
+  //   const handleBeforeUnload = () => {
+  //     if (user?.id) {
+  //       socket.emit("setInActive", user.id, () => {
+  //         // Cleanup
+  //       });
+  //       // Give it a chance to send before unload
+  //       socket.disconnect(); // optionally force close
+  //     }
+  //   };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
 
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [user?.id]);
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, [user?.id]);
 
-  useEffect(() => {
-    if (user?.id) {
-      socket.emit("setActive", user.id, (data) => {
-        if (data.success) {
-          setActiveUsers(data.activeFriends.map((f) => f.chatId));
-        } else {
-          toast.error(data.message || "Failed To Set User Active");
-        }
-      });
-    }
-  }, [user]);
 
-  useEffect(() => {
-    socket.on("userActive", ({ chatId }) => {
-      toast.info("A new user became active in chat");
-      setActiveUsers((prev) => {
-        if (!prev.includes(chatId)) return [...prev, chatId];
-        return prev;
-      });
-    });
+  // useEffect(() => {
+  //   const handleVisibilityChange = () => {
+  //     if (document.visibilityState === "hidden" && user?.id) {
+  //       socket.emit("setInActive", user.id, () => {
+  //         socket.disconnect(); // optional: force disconnect
+  //       });
+  //     }
+  //   };
+  
+  //   const handlePageHide = () => {
+  //     if (user?.id) {
+  //       socket.emit("setInActive", user.id, () => {
+  //         socket.disconnect();
+  //       });
+  //     }
+  //   };
+  
+  //   window.addEventListener("visibilitychange", handleVisibilityChange);
+  //   window.addEventListener("pagehide", handlePageHide); // important for mobile / browser close
+  
+  //   return () => {
+  //     window.removeEventListener("visibilitychange", handleVisibilityChange);
+  //     window.removeEventListener("pagehide", handlePageHide);
+  //   };
+  // }, [user?.id]);
+  
 
-    socket.on("userInactive", ({ chatId }) => {
-      toast.info("A user became inactive in chat");
-      setActiveUsers((prev) => prev.filter((id) => id !== chatId));
-    });
 
-    return () => {
-      socket.off("userActive");
-      socket.off("userInactive");
-    };
-  }, []);
+  // useEffect(() => {
+  //   if (user?.id) {
+  //    setInterval(()=>{
+  //     socket.emit("setActive", user.id, (data) => {
+  //       if (data.success) {
+  //         setActiveUsers(data.activeFriends.map((f) => f.chatId));
+  //       } else {
+  //         toast.error(data.message || "Failed To Set User Active");
+  //       }
+  //     });
+  //    },10000)
+  //   }
+  // }, [user]);
+
+
+// useEffect(()=>{
+//   setInterval(() => {
+//     console.log("setting user active in frontend");
+//     socket.emit("setActive",user?.id, (data) => {
+//       if (data.success) {
+//         setActiveUsers(data.activeFriends.map((f) => f.chatId));
+//       } else {
+//         toast.error(data.message || "Failed To Set User Active");
+//       }
+//     });
+//   }, 1000);
+// },[user?.id])
+    
+
+
+  // useEffect(() => {
+  //   socket.on("userActive", ({ chatId }) => {
+  //     toast.info("A new user became active in chat");
+  //     setActiveUsers((prev) => {
+  //       if (!prev.includes(chatId)) return [...prev, chatId];
+  //       return prev;
+  //     });
+  //   });
+
+  //   socket.on("userInactive", ({ chatId }) => {
+  //     toast.info("A user became inactive in chat");
+  //     setActiveUsers((prev) => prev.filter((id) => id !== chatId));
+  //   });
+
+  //   return () => {
+  //     socket.off("userActive");
+  //     socket.off("userInactive");
+  //   };
+  // }, []);
 
 
 

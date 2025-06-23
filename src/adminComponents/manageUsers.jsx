@@ -13,6 +13,7 @@ export default function ManageUsers() {
   const [usersPicked, setUsersPicked] = useState([]);
   const [filteredUserValue, setFilteredUserValue] = useState("All");
   const [searchStudentsText, setSearchStudentsText] = useState("");
+  console.log(manageUserStats)
 
   // Debounce the search text
   useEffect(() => {
@@ -105,14 +106,14 @@ export default function ManageUsers() {
             <button className="search-button">🔍</button>
           </div>
           <div className="filter-container">
-            <select
+            {/* <select
               className="filter-select"
               value={filteredUserValue}
               onChange={(e) => setFilteredUserValue(e.target.value)}
             >
               <option value="All">All Students</option>
               <option value="active">Active</option>
-            </select>
+            </select> */}
             <div
               className="filter-select"
               style={{
@@ -137,12 +138,12 @@ export default function ManageUsers() {
           </div>
           <div className="stat-label">Total Users</div>
         </div>
-        <div className="stat-card active">
+        {/* <div className="stat-card active">
           <div className="stat-value">
             {numberOfActiveUsers?.length || "NaN"}
           </div>
           <div className="stat-label">Active Users</div>
-        </div>
+        </div> */}
         <div className="stat-card suspended">
           <div className="stat-value">
             {manageUserStats?.totalStudents || "NaN"}
@@ -168,7 +169,6 @@ export default function ManageUsers() {
               <th>ID Number</th>
               <th>Email</th>
               <th>Role</th>
-              <th>Status</th>
               <th>Joined Date</th>
               <th>Actions</th>
             </tr>
@@ -217,7 +217,7 @@ export default function ManageUsers() {
                     <td>{studentUser.idNumber}</td>
                     <td>{studentUser.email}</td>
                     <td>Student</td>
-                    <td>
+                    {/* <td>
                       <span
                         className={`status-badge ${
                           studentUser.active ? "active" : "bg-warning"
@@ -226,7 +226,7 @@ export default function ManageUsers() {
                       >
                         {studentUser.active ? "Active" : "Offline"}
                       </span>
-                    </td>
+                    </td> */}
                     <td>{formatDateAndHandleErrors(studentUser.createdAt)}</td>
                     <td>
                       <div className="action-buttons">

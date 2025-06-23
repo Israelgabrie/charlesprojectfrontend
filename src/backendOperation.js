@@ -1,5 +1,6 @@
 import axios from "axios";
-export const backendLocation = "http://192.168.15.54:4200";
+// export const backendLocation = "https://charlesprojectbackend-6.onrender.com";
+export const backendLocation = "http://localhost:4200";
 import { io } from "socket.io-client";
 
 export const socket = io(backendLocation, {
@@ -64,6 +65,8 @@ export async function requestPost(userObject) {
     return { error: error.response?.data || "Something went wrong" };
   }
 }
+
+
 
 export async function getPendingPosts(userObject) {
   try {
@@ -236,7 +239,7 @@ export async function discoverApi(requestObject) {
 
 export async function approveFollow(requestObject) {
   try {
-    const response = await axios.patch(
+    const response = await axios.post(
       `${backendLocation}/user/approveFollow`,
       requestObject,
       { withCredentials: true }
